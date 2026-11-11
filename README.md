@@ -166,7 +166,8 @@ nitai-theme/
 │  ├─ layout-fix.css     宽表排版修复（独立保存，避免被主题升级覆盖）
 │  └─ client.js          刘海、面板、主题切换
 ├─ tools/                开发与自检脚本
-│  └─ check-theme.mjs    检查宽表修复是否还在
+│  ├─ check-theme.mjs    检查宽表修复是否还在
+│  └─ clean-blank-sessions.mjs  清理 DSH 启动留下的空会话
 ├─ preview.html          不启动 DSH 的独立预览页
 ├─ docs/                 截图
 └─ README.md
@@ -190,6 +191,27 @@ $env:DSH_HOME='C:\Users\18385\Documents\dsh\nitai-theme\.dsh-home'
 ```
 
 隔离 profile 里已经建好 `node_modules\dsh-nitai-theme` 链接，并把插件写进了 bundles。启动后按提示打开带 token 的地址即可。
+
+## 清理“未分组的未命名会话”
+
+侧栏里偶尔会多出几条“未分组 › 未命名”的会话，它们不是主题插件建的，是 DSH 客户端自己的启动逻辑留下的：
+
+- 每次客户端实例启动，恢复逻辑（`dsh-client-ui-workspace` 的 `restoreSelection`）要么恢复上一次的空会话，要么调用 `connectBlank` 新建一个。新建出来的空会话如果没被写进任何工作区的 `sessionIds`，就变成“没有归属”的孤立会话。
+- 这些孤立会话只有 4 条元数据事件（session、permission/preset、sandbox/mode、approval/policy），没有一句用户消息，体积通常 0.3–0.4KB。
+- 桌面端同时拉起多个客户端实例（多窗口、多分屏或启动瞬间重复拉起）时，就会一次留下好几条。
+
+清理脚本只删同时满足“日志小于 2KB、没有任何 user/message 或 assistant/message 事件、id 不在任何工作区的 sessionIds 里”的会话，其余一律不动：
+
+```powershell
+cd C:\Users\18385\Documents\dsh\nitai-theme
+node tools/clean-blank-sessions.mjs            # 只统计，先看清单
+# 完全退出 DeepSeek Harness 之后再执行下面这一条
+node tools/clean-blank-sessions.mjs --apply    # 删除会话目录并清理归档 id
+```
+
+`--apply` 会先把 `~\.dsh\storages\workspace.json` 备份成 `workspace.json.bak-<时间戳>`，再从 `archivedSessionIds`、`pinnedSessionIds` 和各工作区的 `sessionIds` 里去掉这些 id。
+
+必须先把桌面端完全退出再执行 `--apply`：运行中的客户端会用自己的内存状态覆盖 `workspace.json`，在它运行期间改文件等于白改。
 
 ## 卸载 / 回滚
 
