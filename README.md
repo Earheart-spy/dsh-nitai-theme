@@ -22,6 +22,18 @@
 | --- | --- |
 | ![亮色悬浮卡](docs/hover-card-light.png) | ![暗色悬浮卡](docs/hover-card-dark.png) |
 
+接入 OpenCode Go 订阅后，刘海会自动换成用量百分比模式，下面是在真实 Go 订阅账号下截的图（5 小时 4%、本周 1%、本月 0%）：
+
+| Go 模式·亮色 | Go 模式·暗色 |
+| --- | --- |
+| ![Go 亮色](docs/opencode-light.png) | ![Go 暗色](docs/opencode-dark.png) |
+
+面板里的三格也换成用量，并在每格下面写重置倒计时，再补一行模型名、月额度与上下文长度：
+
+| Go 面板·亮色 | Go 面板·暗色 |
+| --- | --- |
+| ![Go 面板亮色](docs/opencode-panel-light.png) | ![Go 面板暗色](docs/opencode-panel-dark.png) |
+
 独立预览页（模拟了聊天、气泡、代码块、表格和输入卡，方便不启动 DSH 也能看主题）：
 
 | 预览亮色 | 预览暗色 |
@@ -55,13 +67,20 @@
 7. 月亮 / 太阳按钮：一键切换亮暗
 8. 向下箭头：展开面板
 
+如果当前会话用的是 OpenCode Go 的模型，第 3～6 项会整组换成 OpenCode Go 的用量：
+
+- `5时`、`本周`、`本月` 三个百分比，分别对应 5 小时窗口、本周、本月的额度占用
+- 超过 85% 转成警示色，达到 100% 转成错误色，一眼能看出快用完
+- 悬停在百分比上有原生的 `title` 提示，显示这一档什么时候重置
+
 展开面板里有：
 
 - 大号时钟、完整日期、农历
 - 今天的日号、月份
-- 今日费用、本次会话费用、余额三格
+- 今日费用、本次会话费用、余额三格（OpenCode Go 模式下换成 5 小时 / 本周 / 本月三格的百分比，每格下面一行小字是重置倒计时）
+- OpenCode Go 模式下再多一行模型信息：模型名 · 月额度 · 上下文长度；额度表用的是内置参考值时，这一行会注明
 - 主题模式三段开关：浅色 / 深色 / 跟随系统
-- “费用设置”入口：直接打开 `dsh-cost-notch` 的设置
+- “费用设置”入口：直接打开 `dsh-cost-notch` 的设置（只在 DeepSeek 计费模式下显示）
 
 点面板外面或按 `Esc` 关闭面板。主题选择会写进浏览器的 `localStorage`，键名是 `dsh-nitai-theme.mode`，值是 `light`、`dark` 或 `auto`。桌面端每次启动可能换本地端口，而 `localStorage` 按端口隔离，所以同时写了一份 Cookie（`nt_mode`，按主机共享），换端口后仍然记得住。没有选过时跟随系统。
 
@@ -91,6 +110,55 @@ body.nt-has-costbar .dshcn-notch {
 ```
 
 `dsh-cost-notch` 停用也不会影响新刘海的时间和费用；“费用设置”入口会跟着消失。费用每 60 秒刷新一次，切换会话时也会立即刷新。
+
+## OpenCode Go 用量模式
+
+同一条刘海现在管两种计费方式：DeepSeek 官方模型按金额算，OpenCode Go 订阅按额度百分比算。切换是自动的，不用手动开。
+
+### 怎么判断当前该用哪种
+
+宿主读当前会话的事件日志：
+
+- 日志里出现 `model/selection` 事件，取它的 `provider` 字段；没有这条事件时，退回最后一条助手消息的 `message.source.provider`
+- `provider` 是 `opencode-go` 或 `opencode` → 走 OpenCode Go 模式
+- `provider` 是 `deepseek-official` → 走原来的 DeepSeek 模式（今日 / 会话 / 余额）
+- 当前会话还没有任何模型事件时（例如刚打开一个空对话），读 profile 里的 `agent-default-model`，10 秒缓存
+
+所以同一个窗口里，换个模型、切个会话，刘海下一次刷新（最长 60 秒，或者一打开面板）就跟着换。
+
+### 数据从哪来
+
+| 数据 | 来源 | 说明 |
+| --- | --- | --- |
+| 5 小时 / 本周 / 本月用量 | `GET https://opencode.ai/zen/go/v1/usage` | 需要 `Authorization: Bearer <OPENCODE_GO_API_KEY>`；上游返回的是**账户级**百分比，不分模型 |
+| 模型名、上下文长度 | `GET https://opencode.ai/inference/go/v1/models` | 公开接口，不需要密钥 |
+| 每个模型的月额度 | 文档页 `https://opencode.ai/docs/console/go/` 的每月限制表 | 没有接口，只能解析页面；解析结果缓存 24 小时，失败时退回上一次的缓存，再退回内置表 |
+
+- 5 小时额度和周额度是按文档给的比例换算的：5 小时 = 月额度 20%，周 = 月额度 50%，月 = 月额度本身
+- 内置表在 `lib/opencode.js` 的 `BUILTIN_MONTHLY_LIMITS`，共 32 个模型，数值取自 2026-11-11 的文档页；文档改价后，只要页面还能解析，就会自动用新值，内置表只是兜底
+- 用量结果缓存 120 秒，取失败缓存 30 秒（免得一遍遍重试）；同一时间只发一次请求，并发的请求共用同一个结果；上游超时 10 秒，响应体上限 2MB
+
+### 密钥怎么取
+
+不读配置文件，走 DSH 自己的凭据服务：先用 `llm-pi-ai.providers['opencode-go'].apiKeyEnv` 里的名字，取不到再用分区默认的 `OPENCODE_API_KEY` / `OPENCODE_GO_API_KEY`。全程只在请求头里用一次，不落盘、不回传浏览器。
+
+### 取不到用量时显示什么
+
+百分比位置显示 `—`，并在第一格下面写一行原因：
+
+| 原因 | 面板上的文字 |
+| --- | --- |
+| 没配置密钥 | 未配置 OpenCode 密钥 |
+| 密钥被拒（401/403） | OpenCode 密钥无效 |
+| 超时或网络不通 | 用量接口暂时连不上 |
+| 返回的不是预期结构 | 用量数据格式异常 |
+| 上游返回其它错误 | 用量接口返回错误 |
+
+这几种情况下，刘海其余部分（时间、星期、明暗切换、面板）都正常，不会弹错误框。
+
+### 本地路由的信任判定
+
+`/dsh-nitai-theme/state.json` 会返回余额和用量，所以注册路由时会先问 DSH 的连接服务要一次判定（`ctx.get('connection').requestRejection(req)`）：判定服务不存在、或者返回了拒绝，就直接按 403 处理，不返回数据。这条是“取不到判定就拒绝”，不是“取不到判定就放行”。
 
 ## 主题是怎么实现的
 
@@ -160,13 +228,15 @@ nitai-theme/
 ├─ package.json          插件清单，声明 dsh.bundle.patch
 ├─ cordis.patch.yml      把插件插进 Cordis 组合
 ├─ lib/
-│  ├─ index.js           宿主侧注入、费用记账和本地路由
+│  ├─ index.js           宿主侧注入、费用记账、路由判定和本地路由
 │  ├─ pricing.js         计价与峰谷时段
+│  ├─ opencode.js        OpenCode Go 用量、模型清单与额度表解析
 │  ├─ theme.css          明暗两套令牌与组件样式
 │  ├─ layout-fix.css     宽表排版修复（独立保存，避免被主题升级覆盖）
 │  └─ client.js          刘海、面板、主题切换
 ├─ tools/                开发与自检脚本
 │  ├─ check-theme.mjs    检查宽表修复是否还在
+│  ├─ check-opencode.mjs 检查 OpenCode Go 额度表与两端接线
 │  └─ clean-blank-sessions.mjs  清理 DSH 启动留下的空会话
 ├─ preview.html          不启动 DSH 的独立预览页
 ├─ docs/                 截图
@@ -182,6 +252,36 @@ Start-Process 'C:\Users\18385\Documents\dsh\nitai-theme\preview.html'
 ```
 
 预览页里带了一份假费用数据（今日 ¥3.42、会话 ¥5.10、余额 ¥106.62），刘海和面板的行为与真实页面一致。
+
+在预览页的控制台里可以直接换成 OpenCode Go 模式看效果：
+
+```js
+window.__NT_MOCK_COST__ = {
+  route: { provider: 'opencode-go', model: 'deepseek-v4.1-flash', mode: 'opencode-go' },
+  opencode: {
+    ok: true,
+    usage: {
+      rolling: { percent: 92, resetsAt: new Date(Date.now() + 40 * 60000).toISOString() },
+      weekly: { percent: 45, resetsAt: new Date(Date.now() + 2.4 * 86400000).toISOString() },
+      monthly: { percent: 100, resetsAt: new Date(Date.now() + 9 * 86400000).toISOString() },
+    },
+    model: { id: 'deepseek-v4.1-flash', name: 'DeepSeek V4.1 Flash 1017', context: 1000000, monthlyLimit: 100 },
+    limitsSource: 'docs',
+  },
+}
+```
+
+这段能同时看到三档的颜色变化：92% 是警示色，45% 正常，100% 是错误色。
+
+## 自检
+
+```powershell
+cd C:\Users\18385\Documents\dsh\nitai-theme
+node tools/check-theme.mjs      # 宽表修复是否还在、是否始终被追加注入
+node tools/check-opencode.mjs   # 额度表、三档换算、文档解析、两端接线
+```
+
+两个脚本都是“有问题就 exit 1”，可以直接串在提交前跑。
 
 ## 在隔离环境里验证（不碰正在用的 DSH）
 
@@ -225,7 +325,10 @@ node tools/clean-blank-sessions.mjs --apply    # 删除会话目录并清理归�
 ## 已知边界
 
 - 已经在隔离的 Web UI 里验证过亮色、暗色、面板、侧栏、会话列表和费用记账；桌面窗口的标题栏与刘海的叠放还没有在桌面窗口里截图确认，重启后才能看到最终位置。
-- 桌面端已经装好插件，但宿主代码不会热加载。只改 `theme.css`、`layout-fix.css` 或 `client.js` 时刷新页面即可；改 `lib/index.js` 或新增路由后，要完全退出 DeepSeek Harness 再打开。
+- 已经加了 OpenCode Go 用量模式，并用真实订阅密钥在隔离实例里跑通过（5 小时 4%、本周 1%、本月 0%）；因为当前会话走的就是 OpenCode Go，重启桌面端后刘海默认会显示百分比而不是金额。
+- OpenCode Go 的用量是账户级百分比，换模型不会改变这三个数字；能区分模型的只有“月额度”这一行展示的上限值。
+- 每月额度来自文档页解析，没有官方接口。页面结构大改时解析会失败，这时回退到内置表（2026-11-11 的数值），可能需要手动更新 `BUILTIN_MONTHLY_LIMITS`。
+- 桌面端已经装好插件，但宿主代码不会热加载。只改 `theme.css`、`layout-fix.css` 或 `client.js` 时刷新页面即可；改 `lib/index.js`、`lib/opencode.js` 或新增路由后，要完全退出 DeepSeek Harness 再打开。
 - 刘海固定 `top: 8px`，按 40px 的 Windows 标题栏估算。如果桌面端的标题栏高度不同，改 `lib/theme.css` 里 `#nt-notch` 的 `top` 即可。
 - 主题只覆盖了 DSH 常用界面。极少数第三方插件自己写死的颜色不会跟着变。
 - 侧栏、会话头部这些组件用的是 `[class~="模块_类名"]` 精确类名选择器；DSH 升级后如果改了 CSS module 的类名前缀，对应的覆盖会失效，令牌部分不受影响。

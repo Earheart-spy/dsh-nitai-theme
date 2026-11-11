@@ -779,6 +779,51 @@ body[data-ds-dark-theme] #nt-notch {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * OpenCode Go 用量区：三个百分比并排，结构和金额模式一样，只是字更紧凑一点。
+ * 85% 以上转成警示色，100% 用错误色，提醒这一档额度已经用满。
+ */
+.nt-oc {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.nt-oc[hidden] {
+  display: none !important;
+}
+
+.nt-oc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.nt-oc-item i {
+  font-style: normal;
+  font-size: 8.5px;
+  letter-spacing: 0.5px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-oc-item b {
+  min-width: 30px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-primary);
+}
+
+.nt-oc-item.nt-hot b {
+  color: var(--dsw-alias-state-warn-primary);
+}
+
+.nt-oc-item.nt-full b {
+  color: var(--dsw-alias-state-error-primary);
+}
+
 .nt-actions {
   display: flex;
   align-items: center;
@@ -968,6 +1013,37 @@ body[data-ds-dark-theme] .nt-daynum {
 .nt-stat.nt-stat-empty b {
   color: var(--dsw-alias-label-caption);
   font-weight: 500;
+}
+
+/* 统计格里的小字备注：OpenCode 模式用来显示“剩 2 时 20 分”或取数失败的原因。 */
+.nt-stat em {
+  font-style: normal;
+  font-size: 8.5px;
+  line-height: 1.3;
+  letter-spacing: 0.2px;
+  color: var(--dsw-alias-label-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.nt-stat em[hidden] {
+  display: none !important;
+}
+
+/* 面板里模型名、月额度、上下文那一行；没有 OpenCode 数据时整行不占位置。 */
+.nt-oc-meta {
+  margin-top: 10px;
+  padding: 7px 10px;
+  border-radius: 11px;
+  font-size: 9.5px;
+  line-height: 1.45;
+  letter-spacing: 0.2px;
+  color: var(--dsw-alias-label-secondary);
+  background-color: var(--dsw-alias-bg-base);
+  box-shadow: var(--nt-inset-soft);
+}
+
+.nt-oc-meta[hidden] {
+  display: none !important;
 }
 
 .nt-divider {
@@ -1257,7 +1333,9 @@ body.nt-has-costbar .dshcn-notch {
 
 @media (max-width: 720px) {
   .nt-cost,
-  .nt-sep.nt-sep-cost {
+  .nt-oc,
+  .nt-sep.nt-sep-cost,
+  .nt-sep.nt-sep-oc {
     display: none !important;
   }
 
