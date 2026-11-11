@@ -1,0 +1,14 @@
+# 源码统一按 LF 换行存储，截图按二进制处理。
+#
+# 为什么固定成 LF：主题样式文件会被宿主整段读进 <style> 注入页面，
+# 换行符在提交和检出之间来回变化会让文件字节数、health 接口里的统计
+# 和调试对比都漂移；Git 全局开启了 core.autocrlf=true，如果不在这里
+# 声明，检出的工作区会变成 CRLF。
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

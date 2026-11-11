@@ -1,0 +1,1325 @@
+/*
+ * 拟态主题样式：亮色令牌写在 body，暗色令牌写在 body[data-ds-dark-theme]，
+ * 组件覆盖放在文件后半段。大量使用 !important 是因为布局插件会把令牌写成
+ * body 的行内样式，普通规则压不过行内样式。
+ */
+
+
+
+
+
+:root {
+  --dsw-radius-xs: 6px;
+  --dsw-radius-sm: 10px;
+  --dsw-radius-md: 14px;
+  --dsw-radius-lg: 20px;
+  --dsw-radius-xl: 24px;
+  --dsw-radius-panel: 26px;
+}
+
+body {
+  
+  --nt-shadow-light: rgba(255, 255, 255, 0.96);
+  --nt-shadow-dark: rgba(159, 173, 189, 0.62);
+  --nt-hairline: rgba(255, 255, 255, 0.72);
+  --nt-hairline-soft: rgba(159, 173, 189, 0.28);
+
+  --nt-raised-sm:
+    5px 5px 12px var(--nt-shadow-dark),
+    -5px -5px 12px var(--nt-shadow-light);
+  --nt-raised:
+    9px 9px 21px var(--nt-shadow-dark),
+    -9px -9px 21px var(--nt-shadow-light);
+  --nt-raised-lg:
+    18px 18px 42px var(--nt-shadow-dark),
+    -16px -16px 36px var(--nt-shadow-light);
+  --nt-inset:
+    inset 3px 3px 7px var(--nt-shadow-dark),
+    inset -3px -3px 7px var(--nt-shadow-light);
+  --nt-inset-soft:
+    inset 2px 2px 4px var(--nt-shadow-dark),
+    inset -2px -2px 4px var(--nt-shadow-light);
+}
+
+body[data-ds-dark-theme] {
+  
+  --nt-shadow-light: rgba(61, 74, 89, 0.58);
+  --nt-shadow-dark: rgba(6, 10, 15, 0.72);
+  --nt-hairline: rgba(255, 255, 255, 0.07);
+  --nt-hairline-soft: rgba(0, 0, 0, 0.34);
+}
+
+
+
+body {
+  
+  --dsw-static-neutral-bluish-00: #f7fafc !important;
+  --dsw-static-neutral-bluish-50: #f2f6fa !important;
+  --dsw-static-neutral-bluish-60: #eef3f8 !important;
+  --dsw-static-neutral-bluish-75: #eaf0f5 !important;
+  --dsw-static-neutral-bluish-100: #e3eaf1 !important;
+  --dsw-static-neutral-bluish-150: #dde5ed !important;
+  --dsw-static-neutral-bluish-200: #d5dfe8 !important;
+  --dsw-static-neutral-bluish-300: #c6d2dd !important;
+  --dsw-static-neutral-bluish-400: #aab8c6 !important;
+  --dsw-static-neutral-bluish-500: #93a2b1 !important;
+  --dsw-static-neutral-bluish-600: #7c8b9a !important;
+  --dsw-static-neutral-bluish-700: #5f6d7b !important;
+  --dsw-static-neutral-bluish-750: #4d5a68 !important;
+  --dsw-static-neutral-bluish-800: #3a4653 !important;
+  --dsw-static-neutral-bluish-850: #2f3a46 !important;
+  --dsw-static-neutral-bluish-875: #2a343f !important;
+  --dsw-static-neutral-bluish-900: #232c36 !important;
+  --dsw-static-neutral-bluish-950: #1b232c !important;
+  --dsw-static-neutral-bluish-1000: #121920 !important;
+
+  
+  --dsw-alias-bg-base: #e7ecf2 !important;
+  --dsw-alias-bg-layer-1: #e7ecf2 !important;
+  --dsw-alias-bg-layer-2: #eff3f8 !important;
+  --dsw-alias-bg-layer-3: #f4f7fa !important;
+  --dsw-alias-bg-module-platform: #e1e7ee !important;
+  --dsw-alias-bg-multi-select: #e0e7ee !important;
+  --dsw-alias-bg-overlay: #f2f5f9 !important;
+  --dsw-alias-bg-document-preview: #f3f6fa !important;
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.42) !important;
+
+  
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.72) !important;
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.88) !important;
+  --dsw-alias-border-l3: rgba(158, 172, 188, 0.28) !important;
+  --dsw-alias-border-l4: rgba(158, 172, 188, 0.4) !important;
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.8) !important;
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.24) !important;
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.16) !important;
+
+  
+  --dsw-alias-label-primary: #283440 !important;
+  --dsw-alias-label-secondary: #53616f !important;
+  --dsw-alias-label-tertiary: #62707c !important;
+  --dsw-alias-label-caption: #84919e !important;
+  --dsw-alias-label-dimmed: #b3bfcb !important;
+  --dsw-alias-label-primary-dimmed: #1f2a35 !important;
+  --dsw-alias-label-primary-inverted: #f3f7fa !important;
+  --dsw-alias-label-primary-foreground: #f3f7fa !important;
+  --dsw-alias-label-primary-bluish: #2b5876 !important;
+  --dsw-alias-label-deep-diving: #2b5876 !important;
+  --dsw-alias-label-deep-diving-shimmer: #7fb4d0 !important;
+  --dsw-alias-label-shimmer: #c3ced9 !important;
+  --dsw-alias-menu-icon: #5f6d7b !important;
+
+  
+  --dsw-alias-brand-primary: #2c7595 !important;
+  --dsw-alias-brand-primary-invert: #e8edf2 !important;
+  --dsw-alias-brand-text: #246a88 !important;
+  --dsw-alias-link: #1f6a8b !important;
+
+  
+  --dsw-alias-interactive-bg-hover: rgba(40, 58, 74, 0.06) !important;
+  --dsw-alias-interactive-bg-active: rgba(40, 58, 74, 0.1) !important;
+  --dsw-alias-interactive-bg-hover-solid: #dfe6ee !important;
+  --dsw-alias-interactive-bg-hover-accent: rgba(44, 117, 149, 0.14) !important;
+  --dsw-alias-interactive-bg-hover-danger: rgba(176, 79, 74, 0.12) !important;
+
+  
+  --dsw-alias-button-primary-fill: #2c7595 !important;
+  --dsw-alias-button-primary-hover: #23617c !important;
+  --dsw-alias-button-primary-dimmed: #b9d0dc !important;
+  --dsw-alias-button-elevated-fill: #eef2f7 !important;
+  --dsw-alias-button-floating-fill: #edf1f6 !important;
+  --dsw-alias-button-floating-hover: #e4eaf0 !important;
+  --dsw-alias-button-contrast-fill: #46586a !important;
+  --dsw-alias-button-ghost-active-fill: #dfe7ef !important;
+  --dsw-alias-button-ghost-active-hover: #d7e0e9 !important;
+  --dsw-alias-button-ghost-active-border: #b8c6d3 !important;
+  --dsw-alias-button-info-fill: #2c7595 !important;
+  --dsw-alias-button-info-hover: #23617c !important;
+  --dsw-alias-button-tool-bar-fill: rgba(238, 242, 247, 0.82) !important;
+  --dsw-alias-button-tool-bar-hover: rgba(226, 233, 240, 0.94) !important;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(40, 58, 74, 0.52) !important;
+
+  
+  --dsw-alias-state-business-primary: #3a7fa3 !important;
+  --dsw-alias-state-business-tertiary: #d7e6ef !important;
+  --dsw-alias-state-error-primary: #b04f4a !important;
+  --dsw-alias-state-error-secondary: #c9706b !important;
+  --dsw-alias-state-idle-primary: #aab7c3 !important;
+  --dsw-alias-state-success-primary: #37795a !important;
+  --dsw-alias-state-success-secondary: #5a9479 !important;
+  --dsw-alias-state-success-tertiary: #d6e8de !important;
+  --dsw-alias-state-warn-primary: #a9762c !important;
+  --dsw-alias-state-warn-secondary: #c2934e !important;
+  --dsw-alias-state-warn-tertiary: #f0e2ce !important;
+  --dsw-alias-state-warn-label: #875a18 !important;
+
+  
+  --dsw-alias-markdown-code-block: #e0e7ef !important;
+  --dsw-alias-markdown-code-block-banner: #e6ecf3 !important;
+  --dsw-alias-markdown-code-segment-selected: #eef3f8 !important;
+  --dsw-alias-markdown-code-segment-unselected: #dce4ec !important;
+  --dsw-alias-markdown-inline-code: #e1e8ef !important;
+  --dsw-alias-markdown-tag: #dfe6ee !important;
+  --dsw-alias-markdown-citation: #d4e0ea !important;
+  --dsw-alias-markdown-placeholder: #dfe6ee !important;
+  --dsw-alias-turn-trigger-bg: #e0e7ef !important;
+  --dsw-alias-turn-trigger-bg-hover: #d8e1ea !important;
+
+  
+  --dsw-alias-scrollbar-bg-l1: #c8d4df !important;
+  --dsw-alias-scrollbar-bg-l2: #c8d4df !important;
+  --dsw-alias-scrollbar-hover-l1: #b3c2d0 !important;
+  --dsw-alias-scrollbar-hover-l2: #b3c2d0 !important;
+  --dsw-alias-switch-thumb: #f6f9fc !important;
+  --dsw-alias-toast-bg: #37424e !important;
+  --dsw-alias-toast-label: #f1f5f9 !important;
+  --dsw-alias-tooltip-bg: #37424e !important;
+  --dsw-alias-tooltip-key-bg: #4a5765 !important;
+
+  
+  --dsw-specific-sidebar-fill: #e7ecf2 !important;
+  --dsw-specific-sidebar-nav-item-hover: #eaf0f6 !important;
+  --dsw-specific-sidebar-nav-item-active: #dde5ed !important;
+  --dsw-specific-sidebar-nav-item-active-accent: #d3e2ec !important;
+  --dsw-specific-input-major: #f1f5f9 !important;
+  --dsw-specific-login-input: #e4eaf1 !important;
+  --dsw-specific-bubble: #dde8f1 !important;
+  --dsw-specific-bubble-highlight: #cfe0ee !important;
+  --dsw-specific-menu: rgba(240, 244, 248, 0.96) !important;
+  --dsw-menu-surface-fill: rgba(240, 244, 248, 0.96) !important;
+  --dsw-alias-menu-group-header-fill: rgba(232, 237, 243, 0.96) !important;
+  --dsw-specific-selector: #e3e9ef !important;
+  --dsw-specific-tip: #e3e9ef !important;
+
+  
+  --dsw-elevation-soft: var(--nt-raised-sm) !important;
+  --dsw-elevation-prominent: var(--nt-raised) !important;
+  --dsw-elevation-panel: var(--nt-raised-lg) !important;
+  --dsw-elevation-stroke-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+
+
+body[data-ds-dark-theme] {
+  
+  --dsw-static-neutral-bluish-00: #e4ecf4 !important;
+  --dsw-static-neutral-bluish-50: #d9e3ec !important;
+  --dsw-static-neutral-bluish-60: #aebbc8 !important;
+  --dsw-static-neutral-bluish-75: #96a4b2 !important;
+  --dsw-static-neutral-bluish-100: #7f8d9b !important;
+  --dsw-static-neutral-bluish-150: #6d7b89 !important;
+  --dsw-static-neutral-bluish-200: #5b6876 !important;
+  --dsw-static-neutral-bluish-300: #4c5865 !important;
+  --dsw-static-neutral-bluish-400: #3f4a57 !important;
+  --dsw-static-neutral-bluish-500: #35404c !important;
+  --dsw-static-neutral-bluish-600: #2f3944 !important;
+  --dsw-static-neutral-bluish-700: #29323c !important;
+  --dsw-static-neutral-bluish-750: #252e37 !important;
+  --dsw-static-neutral-bluish-800: #232b34 !important;
+  --dsw-static-neutral-bluish-850: #202830 !important;
+  --dsw-static-neutral-bluish-875: #1e252c !important;
+  --dsw-static-neutral-bluish-900: #1a2128 !important;
+  --dsw-static-neutral-bluish-950: #161c23 !important;
+  --dsw-static-neutral-bluish-1000: #10151b !important;
+
+  --dsw-alias-bg-base: #1d232b !important;
+  --dsw-alias-bg-layer-1: #212831 !important;
+  --dsw-alias-bg-layer-2: #252d37 !important;
+  --dsw-alias-bg-layer-3: #2a323d !important;
+  --dsw-alias-bg-module-platform: #232b34 !important;
+  --dsw-alias-bg-multi-select: #26303a !important;
+  --dsw-alias-bg-overlay: #2a323d !important;
+  --dsw-alias-bg-document-preview: #232a33 !important;
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.05) !important;
+
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.06) !important;
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.1) !important;
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.12) !important;
+  --dsw-alias-border-l4: rgba(255, 255, 255, 0.18) !important;
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.1) !important;
+  --dsw-alias-border-inverted: rgba(0, 0, 0, 0.36) !important;
+  --dsw-alias-border-inverted2: rgba(0, 0, 0, 0.24) !important;
+
+  --dsw-alias-label-primary: #dbe4ed !important;
+  --dsw-alias-label-secondary: #a6b4c2 !important;
+  --dsw-alias-label-tertiary: #8795a3 !important;
+  --dsw-alias-label-caption: #6f7d8b !important;
+  --dsw-alias-label-dimmed: #3d4854 !important;
+  --dsw-alias-label-primary-dimmed: #c8d3de !important;
+  --dsw-alias-label-primary-inverted: #1a2027 !important;
+  --dsw-alias-label-primary-foreground: #0f1920 !important;
+  --dsw-alias-label-primary-bluish: #a8d5e8 !important;
+  --dsw-alias-label-deep-diving: #a8d5e8 !important;
+  --dsw-alias-label-deep-diving-shimmer: #4f93ad !important;
+  --dsw-alias-label-shimmer: #3b4652 !important;
+  --dsw-alias-menu-icon: #93a1af !important;
+
+  --dsw-alias-brand-primary: #6fc9df !important;
+  --dsw-alias-brand-primary-invert: #1a2027 !important;
+  --dsw-alias-brand-text: #8ad9ea !important;
+  --dsw-alias-link: #83d9ea !important;
+
+  --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.06) !important;
+  --dsw-alias-interactive-bg-active: rgba(255, 255, 255, 0.1) !important;
+  --dsw-alias-interactive-bg-hover-solid: #2b3440 !important;
+  --dsw-alias-interactive-bg-hover-accent: rgba(111, 201, 223, 0.16) !important;
+  --dsw-alias-interactive-bg-hover-danger: rgba(224, 138, 132, 0.16) !important;
+
+  --dsw-alias-button-primary-fill: #62c4da !important;
+  --dsw-alias-button-primary-hover: #7ed6e9 !important;
+  --dsw-alias-button-primary-dimmed: #2c4a54 !important;
+  --dsw-alias-button-elevated-fill: #2a323c !important;
+  --dsw-alias-button-floating-fill: #2a323c !important;
+  --dsw-alias-button-floating-hover: #313b47 !important;
+  --dsw-alias-button-contrast-fill: #3c4755 !important;
+  --dsw-alias-button-ghost-active-fill: #303a45 !important;
+  --dsw-alias-button-ghost-active-hover: #37424e !important;
+  --dsw-alias-button-ghost-active-border: #4a5664 !important;
+  --dsw-alias-button-info-fill: #62c4da !important;
+  --dsw-alias-button-info-hover: #7ed6e9 !important;
+  --dsw-alias-button-tool-bar-fill: rgba(42, 50, 60, 0.86) !important;
+  --dsw-alias-button-tool-bar-hover: rgba(52, 62, 74, 0.94) !important;
+  --dsw-alias-button-tool-bar-fill-invisible: rgba(219, 228, 237, 0.5) !important;
+
+  --dsw-alias-state-business-primary: #74cfe4 !important;
+  --dsw-alias-state-business-tertiary: #223b46 !important;
+  --dsw-alias-state-error-primary: #e08a84 !important;
+  --dsw-alias-state-error-secondary: #c9706a !important;
+  --dsw-alias-state-idle-primary: #4b5663 !important;
+  --dsw-alias-state-success-primary: #64c295 !important;
+  --dsw-alias-state-success-secondary: #4fae80 !important;
+  --dsw-alias-state-success-tertiary: #1f3a2e !important;
+  --dsw-alias-state-warn-primary: #d9a45a !important;
+  --dsw-alias-state-warn-secondary: #c08c45 !important;
+  --dsw-alias-state-warn-tertiary: #3a2f1c !important;
+  --dsw-alias-state-warn-label: #e0b273 !important;
+
+  --dsw-alias-markdown-code-block: #171d24 !important;
+  --dsw-alias-markdown-code-block-banner: #1b222a !important;
+  --dsw-alias-markdown-code-segment-selected: #2b3440 !important;
+  --dsw-alias-markdown-code-segment-unselected: #171d24 !important;
+  --dsw-alias-markdown-inline-code: #1a2028 !important;
+  --dsw-alias-markdown-tag: #29323c !important;
+  --dsw-alias-markdown-citation: #2a333d !important;
+  --dsw-alias-markdown-placeholder: #232b34 !important;
+  --dsw-alias-turn-trigger-bg: #232a33 !important;
+  --dsw-alias-turn-trigger-bg-hover: #2a323c !important;
+
+  --dsw-alias-scrollbar-bg-l1: #3a4552 !important;
+  --dsw-alias-scrollbar-bg-l2: #3a4552 !important;
+  --dsw-alias-scrollbar-hover-l1: #4a5765 !important;
+  --dsw-alias-scrollbar-hover-l2: #4a5765 !important;
+  --dsw-alias-switch-thumb: #dfe8f1 !important;
+  --dsw-alias-toast-bg: #333d48 !important;
+  --dsw-alias-toast-label: #f2f6fa !important;
+  --dsw-alias-tooltip-bg: #39434f !important;
+  --dsw-alias-tooltip-key-bg: #4a5665 !important;
+
+  --dsw-specific-sidebar-fill: #1d232b !important;
+  --dsw-specific-sidebar-nav-item-hover: #242c35 !important;
+  --dsw-specific-sidebar-nav-item-active: #28323d !important;
+  --dsw-specific-sidebar-nav-item-active-accent: #2f4855 !important;
+  --dsw-specific-input-major: #29323d !important;
+  --dsw-specific-login-input: #1b2229 !important;
+  --dsw-specific-bubble: #2b3742 !important;
+  --dsw-specific-bubble-highlight: #34434f !important;
+  --dsw-specific-menu: rgba(38, 46, 56, 0.97) !important;
+  --dsw-menu-surface-fill: rgba(38, 46, 56, 0.97) !important;
+  --dsw-alias-menu-group-header-fill: rgba(32, 39, 47, 0.97) !important;
+  --dsw-specific-selector: #232b34 !important;
+  --dsw-specific-tip: #232b34 !important;
+
+  --dsw-elevation-soft: var(--nt-raised-sm) !important;
+  --dsw-elevation-prominent: var(--nt-raised) !important;
+  --dsw-elevation-panel: var(--nt-raised-lg) !important;
+  --dsw-elevation-stroke-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+
+
+body {
+  background-color: var(--dsw-alias-bg-base) !important;
+  color: var(--dsw-alias-label-primary) !important;
+}
+
+
+html {
+  background-color: var(--dsw-alias-bg-base) !important;
+}
+
+/*
+ * 统一画布：窗口内不再用不同底色区分侧栏、中心栏和右栏。
+ * 这样窗口四角和面板交界处不会出现直角色块，整块背景看起来是一张连续的画布。
+ */
+[class*="_frame"] {
+  background-color: var(--dsw-alias-bg-base) !important;
+  background-image: none !important;
+}
+
+::selection {
+  background-color: rgba(44, 117, 149, 0.22) !important;
+  color: inherit !important;
+}
+
+body[data-ds-dark-theme] ::selection {
+  background-color: rgba(111, 201, 223, 0.26) !important;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dsw-alias-scrollbar-bg-l1) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--dsw-alias-scrollbar-bg-l1);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dsw-alias-scrollbar-hover-l1);
+}
+
+
+:where(a, button, input, textarea, select, summary, [role="button"], [role="menuitem"], [role="tab"], [role="switch"]):focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary) !important;
+  outline-offset: 2px;
+}
+
+:where([tabindex="-1"]):focus-visible {
+  outline: none !important;
+}
+
+
+
+[class*="_sidebarCol"],
+[class*="_centerCol"],
+[class*="_rightbarCol"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/*
+ * 右栏和浮动控件：圆角比原生更大，避免侧边出现直角方块。
+ * 28px 的圆形按钮在 14px 圆角下仍然是正圆，不会变形。
+ */
+[class*="_rightbarCol"] [data-sidebar-right-session],
+[class*="_rightbarCol"] [class*="_session"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 右栏展开时，内部面板默认画一条 1px 竖线；统一画布后这条线变成了多余的接缝。 */
+[class*="_rightbarCol"] [class*="_tabHost"],
+[class*="_rightbarCol"] [class*="_pane"] {
+  background: transparent !important;
+  border-left: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 右栏里的工具入口保持原生卡片，不按“类名包含 entry”统一涂色，
+ * 否则会把 entryTitle 等子元素一起选中，出现一条亮色横带。 */
+
+[class*="_rightbarCol"] button,
+[data-dsh-better-sidebar] button {
+  border-radius: 14px !important;
+}
+
+[class*="toBottom"] {
+  border-radius: 999px !important;
+}
+
+
+
+
+[data-composer-card] {
+  border-radius: 26px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  background-color: var(--dsw-specific-input-major) !important;
+  background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 46%) !important;
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+body[data-ds-dark-theme] [data-composer-card] {
+  background-image: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 46%) !important;
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+
+[data-composer-card] [contenteditable="true"],
+[data-composer-card] textarea {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+
+[class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+  border-radius: 18px 18px 6px 18px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+}
+
+body[data-ds-dark-theme] [class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+
+[class*="_card"]:not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+  border-radius: 20px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+}
+
+body[data-ds-dark-theme] [class*="_card"]:not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+  border: 1px solid var(--nt-hairline) !important;
+}
+
+/* 侧栏会话/工作区的悬浮卡片：原生固定是深色浮层，这里改成跟随明暗模式的拟态卡片。 */
+[class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) {
+  width: 260px !important;
+  padding: 14px 18px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  border-radius: 18px !important;
+  background: var(--dsw-alias-bg-layer-3) !important;
+  color: var(--dsw-alias-label-primary) !important;
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 var(--nt-shadow-light) !important;
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+[class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) [class~="wnFoaW_hoverTitle"] {
+  color: var(--dsw-alias-label-primary) !important;
+  font-size: 13.5px !important;
+  line-height: 19px !important;
+  font-weight: 600 !important;
+}
+
+[class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) [class~="wnFoaW_hoverTime"],
+[class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) [class~="wnFoaW_hoverPath"] {
+  color: var(--dsw-alias-label-secondary) !important;
+  font-size: 11.5px !important;
+  line-height: 16px !important;
+}
+
+[class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) [class~="wnFoaW_hoverStatus"] {
+  color: var(--dsw-alias-label-secondary) !important;
+  font-size: 11.5px !important;
+  line-height: 18px !important;
+}
+
+body[data-ds-dark-theme] [class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) {
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+
+[role="menu"],
+[role="listbox"],
+[role="dialog"],
+[class*="_menu_"],
+[class*="_popover_"] {
+  border-radius: 18px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  box-shadow: var(--nt-raised) !important;
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+[role="dialog"] {
+  border-radius: 24px !important;
+  box-shadow: var(--nt-raised-lg) !important;
+}
+
+[role="menu"] [role="menuitem"],
+[role="listbox"] [role="option"] {
+  border-radius: 12px !important;
+}
+
+[role="tooltip"] {
+  border-radius: 12px !important;
+  box-shadow: var(--nt-raised-sm) !important;
+}
+
+
+pre {
+  border-radius: 14px !important;
+  border: 1px solid var(--nt-hairline-soft) !important;
+  box-shadow: var(--nt-inset-soft) !important;
+}
+
+
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: var(--nt-raised-sm) !important;
+}
+
+thead th {
+  background-color: var(--dsw-alias-bg-layer-3) !important;
+}
+
+tbody td {
+  border-top: 1px solid var(--dsw-alias-border-l3) !important;
+}
+
+
+input[type="text"]:not([data-composer-card] *),
+input[type="search"]:not([data-composer-card] *),
+input[type="password"]:not([data-composer-card] *),
+input[type="email"]:not([data-composer-card] *),
+textarea:not([data-composer-card] *) {
+  border-radius: 12px !important;
+  border: 1px solid var(--nt-hairline) !important;
+  background-color: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-inset-soft) !important;
+}
+
+
+img,
+video {
+  border-radius: 12px;
+}
+
+
+
+/*
+ * 顶部刘海和展开面板。刘海固定在窗口顶部中间，面板从刘海下方展开。
+ */
+#nt-notch {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 9px 0 14px;
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  border: 1px solid var(--nt-hairline);
+  border-radius: 999px;
+  background-color: var(--dsw-alias-bg-layer-2);
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 48%);
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 12px 30px -18px rgba(16, 24, 40, 0.45);
+  color: var(--dsw-alias-label-primary);
+  font-family: var(--dsw-font-family);
+  font-size: 12px;
+  line-height: 1;
+  user-select: none;
+  -webkit-app-region: no-drag;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+
+body[data-ds-dark-theme] #nt-notch {
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 48%);
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 14px 32px -18px rgba(0, 0, 0, 0.9);
+}
+
+#nt-notch:hover {
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 34px -18px rgba(16, 24, 40, 0.5);
+}
+
+#nt-notch.nt-open {
+  transform: translateX(-50%);
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 18px 40px -20px rgba(16, 24, 40, 0.55);
+}
+
+.nt-clock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 42px;
+}
+
+.nt-time {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nt-weekday {
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-sep {
+  width: 1px;
+  height: 18px;
+  flex: none;
+  background: linear-gradient(180deg, transparent, var(--dsw-alias-border-l4), transparent);
+}
+
+.nt-sep[hidden] {
+  display: none !important;
+}
+
+
+.nt-window {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nt-window[hidden] {
+  display: none !important;
+}
+
+.nt-dot {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background-color: var(--dsw-alias-state-success-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dsw-alias-state-success-primary) 16%, transparent);
+}
+
+.nt-window.is-peak .nt-dot {
+  background-color: var(--dsw-alias-state-warn-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dsw-alias-state-warn-primary) 18%, transparent);
+  animation: nt-breathe 2.4s ease-in-out infinite;
+}
+
+.nt-win-label {
+  font-size: 9.5px;
+  letter-spacing: 0.4px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-win-eta {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-secondary);
+}
+
+@keyframes nt-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.78);
+    opacity: 0.7;
+  }
+}
+
+.nt-cost {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nt-cost[hidden] {
+  display: none !important;
+}
+
+.nt-cost-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.nt-cost-item i {
+  font-style: normal;
+  font-size: 8.5px;
+  letter-spacing: 0.5px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-cost-item b {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.nt-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.nt-btn:hover {
+  color: var(--dsw-alias-label-primary);
+  background-color: var(--dsw-alias-bg-layer-3);
+  box-shadow: var(--nt-inset-soft);
+}
+
+.nt-btn:active {
+  box-shadow: var(--nt-inset);
+}
+
+.nt-btn svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.nt-more svg {
+  transition: transform 0.22s ease;
+}
+
+#nt-notch.nt-open .nt-more svg {
+  transform: rotate(180deg);
+}
+
+
+
+.nt-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: 356px;
+  box-sizing: border-box;
+  padding: 20px 20px 14px;
+  transform: translateX(-50%) translateY(-6px);
+  border: 1px solid var(--nt-hairline);
+  border-radius: 26px;
+  background-color: var(--dsw-alias-bg-layer-2);
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 50%);
+  box-shadow:
+    var(--nt-raised-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
+}
+
+body[data-ds-dark-theme] .nt-panel {
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 50%);
+  box-shadow:
+    var(--nt-raised-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+#nt-notch.nt-open .nt-panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nt-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nt-bigtime {
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-primary);
+}
+
+.nt-bigdate {
+  margin-top: 7px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-lunar {
+  display: block;
+  font-size: 10px;
+  color: var(--dsw-alias-label-caption);
+}
+
+.nt-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.nt-daynum {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--dsw-alias-bg-layer-3);
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: var(--dsw-alias-brand-primary);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-ds-dark-theme] .nt-daynum {
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.nt-month {
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.nt-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 10px;
+  border-radius: 14px;
+  background-color: var(--dsw-alias-bg-base);
+  box-shadow: var(--nt-inset-soft);
+}
+
+.nt-stat span {
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-stat b {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.nt-stat.nt-stat-empty b {
+  color: var(--dsw-alias-label-caption);
+  font-weight: 500;
+}
+
+.nt-divider {
+  height: 1px;
+  margin: 15px 0 13px;
+  background: linear-gradient(90deg, transparent, var(--dsw-alias-border-l4), transparent);
+}
+
+.nt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nt-row > span {
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.nt-seg {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background-color: var(--dsw-alias-bg-base);
+  box-shadow: var(--nt-inset-soft);
+}
+
+.nt-seg button {
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--dsw-alias-label-tertiary);
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.nt-seg button:hover {
+  color: var(--dsw-alias-label-primary);
+}
+
+.nt-seg button[aria-pressed="true"] {
+  color: var(--dsw-alias-label-primary);
+  background-color: var(--dsw-alias-bg-layer-2);
+  box-shadow: var(--nt-raised-sm);
+}
+
+.nt-panel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 13px;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  color: var(--dsw-alias-label-caption);
+}
+
+.nt-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dsw-alias-link);
+  font-family: inherit;
+  font-size: 9.5px;
+  cursor: pointer;
+}
+
+.nt-link:hover {
+  text-decoration: underline;
+}
+
+.nt-link[hidden] {
+  display: none !important;
+}
+
+
+
+
+
+/*
+ * 侧栏：根部透明，和中心栏共用同一张画布；新建按钮、导航行、选中的会话行仍然浮起来。
+ * 选择器用 [class~="模块_类名"] 精确匹配整个类名，避免把 newSessionLabelMask
+ * 这类子元素一起选中。
+ */
+[class~="wtg9ga_root"] {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[class~="wtg9ga_newSession"] {
+  border: 0 !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+[class~="wtg9ga_newSession"]:hover {
+  background: var(--dsw-alias-bg-layer-3) !important;
+  box-shadow: var(--nt-raised) !important;
+  transform: translateY(-1px);
+}
+
+[class~="wtg9ga_panelRow"] {
+  margin: 5px 2px !important;
+  border-radius: 11px !important;
+  color: var(--dsw-alias-label-secondary) !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+[class~="wtg9ga_panelRow"]:hover,
+[class~="wtg9ga_panelActive"] {
+  background: var(--dsw-alias-bg-layer-2) !important;
+  color: var(--dsw-alias-label-primary) !important;
+  box-shadow: var(--nt-raised) !important;
+}
+
+
+[class~="GAkraW_sectionLabel"] {
+  color: var(--dsw-alias-label-caption) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em;
+}
+
+
+[class*="_sidebarCol"] [class*="search"]:has(input),
+[class*="_sidebarCol"] input[type="search"] {
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: var(--dsw-alias-bg-layer-1) !important;
+  box-shadow: var(--nt-inset-soft) !important;
+}
+
+
+[class~="wnFoaW_sessionRow"],
+[class~="wnFoaW_projectRow"] {
+  border-radius: 11px !important;
+  margin: 1px 0 !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+[class~="wnFoaW_sessionRow"]:hover,
+[class~="wnFoaW_projectRow"]:hover {
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 62%, transparent) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+}
+
+[class~="wnFoaW_sessionRow"][class~="wnFoaW_selected"],
+[class~="wnFoaW_projectRow"][class~="wnFoaW_selected"] {
+  color: var(--dsw-alias-label-primary) !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow:
+    var(--nt-raised-sm),
+    inset 0 1px 0 var(--nt-shadow-light) !important;
+}
+
+
+/*
+ * 会话头部：去掉底色和分隔线，让正文区和标题区落在同一张画布上。
+ * 未选中的标签只显示文字；选中的标签做成和左侧导航一样的凸起胶囊。
+ */
+[class~="an3WzG_header"] {
+  border-bottom: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[class~="an3WzG_tabs"] {
+  margin-top: 10px !important;
+}
+
+[class~="an3WzG_viewTabs"] {
+  gap: 28px !important;
+  align-items: flex-end;
+  border-radius: 0;
+  padding: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[class~="an3WzG_tab"] {
+  border-radius: 10px !important;
+  padding: 0 0 9px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[class~="an3WzG_tab"]::after {
+  border-radius: 999px !important;
+  height: 2px !important;
+}
+
+[class~="an3WzG_tabActive"] {
+  color: var(--dsw-alias-brand-primary) !important;
+  border-radius: 10px !important;
+  padding: 4px 11px 9px !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+[class~="an3WzG_tabActive"]::after {
+  display: none !important;
+}
+
+[class~="an3WzG_crumb"] {
+  border-radius: 8px !important;
+}
+
+[class~="an3WzG_crumbCurrent"] {
+  font-weight: 600 !important;
+}
+
+
+[class~="an3WzG_headerActions"] button,
+[class~="an3WzG_headerUtilities"] button,
+[class~="an3WzG_headerCorner"] button {
+  border-radius: 9px !important;
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 76%, transparent) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+[class~="an3WzG_headerActions"] button:hover,
+[class~="an3WzG_headerUtilities"] button:hover,
+[class~="an3WzG_headerCorner"] button:hover {
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-raised-sm) !important;
+}
+
+
+[class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+  box-shadow:
+    var(--nt-raised),
+    inset 0 1px 0 var(--nt-shadow-light) !important;
+}
+
+body[data-ds-dark-theme] [class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+  box-shadow:
+    -6px -6px 14px rgba(255, 255, 255, 0.045),
+    8px 8px 18px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+
+[class~="DXuOLW_root"] {
+  border: 1px solid var(--nt-hairline) !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
+  box-shadow: var(--nt-raised) !important;
+  backdrop-filter: blur(18px) saturate(1.15);
+}
+
+[class~="DXuOLW_header"] {
+  border-radius: 12px;
+}
+
+[class~="DXuOLW_item"] {
+  min-height: 22px;
+}
+
+body.nt-has-costbar .dshcn-notch {
+  display: none !important;
+}
+
+
+@media (max-width: 720px) {
+  .nt-cost,
+  .nt-sep.nt-sep-cost {
+    display: none !important;
+  }
+
+  .nt-panel {
+    width: min(340px, calc(100vw - 24px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #nt-notch,
+  .nt-panel,
+  .nt-btn,
+  .nt-more svg,
+  .nt-seg button {
+    transition: none !important;
+  }
+}
+
+@media print {
+  #nt-notch {
+    display: none !important;
+  }
+}
+
+/*
+ * 宽表（4 列及以上）收回正文阅读宽度。
+ *
+ * 这段规则现在同时保留在 theme.css 和 layout-fix.css：theme.css 里的副本让
+ * 已经运行的旧宿主立刻继续生效；layout-fix.css 是独立备份，未来重新生成
+ * theme.css 时如果这段被覆盖，新宿主会自动改读 layout-fix.css。
+ *
+ * 选择器只用了 md-table-wide 这个语义类名。它是渲染器在代码里直接写死的，
+ * 不带打包生成的哈希后缀，所以升级 DSH 版本后依然能命中。
+ */
+.md-table-wide {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  padding-bottom: 0 !important;
+  overflow-x: visible !important;
+}
+
+.md-table-wide > table {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: auto;
+}
+
+.md-table-wide > table th,
+.md-table-wide > table td {
+  min-width: 0 !important;
+  max-width: none !important;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 单元格里的行内代码是一个 flex 盒子，默认不会换行，长路径会把整列撑宽。 */
+.md-table-wide > table :where(th, td) code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+

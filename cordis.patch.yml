@@ -1,0 +1,8 @@
+# dsh-nitai-theme 的 profile 补丁层。
+#
+# 这里只声明一条普通的 cordis 载入项。宿主半区（lib/index.js）由这条记录载入；
+# 浏览器半区（lib/client.js）由宿主通过自己的 /dsh-nitai-theme/* 路由提供，
+# 再由 webserver/index-inject 注入页面，因此不需要客户端打包步骤。
+- insert:
+    - id: nitai-theme
+      name: 'dsh-nitai-theme'

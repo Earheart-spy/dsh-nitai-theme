@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拟态主题预览 · DeepSeek Harness</title>
+<link rel="stylesheet" href="lib/theme.css">
+<link rel="stylesheet" href="lib/layout-fix.css">
+<style>
+  /* 这一页只模拟 DSH 的结构与密度，真正被验收的样式来自 lib/theme.css 与 lib/layout-fix.css。 */
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+
+  body {
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", sans-serif;
+    font-size: 13px;
+  }
+
+  .pv-titlebar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 5;
+    height: 40px;
+    background: var(--dsw-specific-sidebar-fill);
+    box-shadow: inset 0 -1px 0 var(--dsw-alias-border-l3);
+    -webkit-app-region: drag;
+  }
+
+  .pv-traffic {
+    position: absolute;
+    left: 16px;
+    top: 15px;
+    display: flex;
+    gap: 7px;
+  }
+
+  .pv-traffic i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--dsw-alias-bg-layer-3);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .8), 0 1px 2px rgba(16, 24, 40, .18);
+  }
+
+  .pv-title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    letter-spacing: .3px;
+    color: var(--dsw-alias-label-tertiary);
+  }
+
+  .pv-frame {
+    display: grid;
+    grid-template-columns: 238px minmax(0, 1fr);
+    height: 100vh;
+    padding-top: 40px;
+  }
+
+  .pv-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+    padding: 16px 12px 12px;
+  }
+
+  .pv-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 2px 6px 0;
+  }
+
+  .pv-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 11px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+    color: var(--dsw-alias-brand-primary);
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .pv-brand-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+
+  .pv-brand-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 9px;
+    letter-spacing: .5px;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-newchat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--nt-hairline);
+    border-radius: 14px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+    color: var(--dsw-alias-label-primary);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pv-newchat:active {
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pv-search {
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    font-family: inherit;
+    font-size: 11.5px;
+    color: var(--dsw-alias-label-primary);
+  }
+
+  .pv-search::placeholder {
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .pv-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 11px;
+    color: var(--dsw-alias-label-secondary);
+    font-size: 12px;
+  }
+
+  .pv-nav-item.active {
+    background: var(--dsw-specific-sidebar-nav-item-active);
+    color: var(--dsw-alias-label-primary);
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pv-nav-item svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+    opacity: .8;
+  }
+
+  .pv-section {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-height: 0;
+  }
+
+  .pv-section-title {
+    padding: 0 10px;
+    margin: 2px 0 4px;
+    font-size: 9.5px;
+    letter-spacing: .8px;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-thread {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 10px;
+    color: var(--dsw-alias-label-secondary);
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pv-thread.active {
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+    color: var(--dsw-alias-label-primary);
+  }
+
+  .pv-account {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: auto;
+    padding: 9px 10px;
+    border-radius: 14px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+  }
+
+  .pv-avatar {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #5aa9c9, #2c7595);
+    color: #f3f7fa;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .pv-account b {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pv-account span {
+    display: block;
+    margin-top: 2px;
+    font-size: 9px;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    border-radius: 16px 0 0 0;
+    background: var(--dsw-alias-bg-base);
+  }
+
+  .pv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 62px;
+    padding: 0 26px;
+  }
+
+  .pv-header h1 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: .2px;
+  }
+
+  .pv-header p {
+    margin: 3px 0 0;
+    font-size: 10px;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 11px;
+    border-radius: 999px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+    font-size: 10px;
+    color: var(--dsw-alias-label-secondary);
+  }
+
+  .pv-chip i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dsw-alias-state-success-primary);
+  }
+
+  .pv-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 26px 18px;
+  }
+
+  .pv-chat {
+    width: min(720px, 100%);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .pv-user-row {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .LOmM4q_bubble {
+    max-width: 78%;
+    padding: 11px 15px;
+    background: var(--dsw-specific-bubble);
+    color: var(--dsw-alias-label-primary);
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  .pv-assistant {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: var(--dsw-alias-label-primary);
+    font-size: 12.5px;
+    line-height: 1.75;
+  }
+
+  .pv-assistant p {
+    margin: 0;
+  }
+
+  .pv-assistant h2 {
+    margin: 6px 0 0;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .pv-assistant ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .pv-assistant li {
+    margin: 3px 0;
+  }
+
+  .pv-assistant code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: var(--dsw-alias-markdown-inline-code);
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 11px;
+  }
+
+  .pv-assistant pre {
+    margin: 0;
+    padding: 12px 14px;
+    overflow: auto;
+    background: var(--dsw-alias-markdown-code-block);
+  }
+
+  .pv-assistant pre code {
+    padding: 0;
+    background: transparent;
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--dsw-alias-label-secondary);
+  }
+
+  .pv-assistant table {
+    width: 100%;
+    font-size: 11.5px;
+  }
+
+  .pv-assistant th,
+  .pv-assistant td {
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  .pv-assistant th {
+    font-weight: 600;
+    font-size: 10.5px;
+    letter-spacing: .3px;
+    color: var(--dsw-alias-label-secondary);
+  }
+
+  .pv-hint {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-inset-soft);
+    font-size: 10.5px;
+    color: var(--dsw-alias-label-tertiary);
+  }
+
+  .pv-composer-wrap {
+    padding: 6px 26px 18px;
+  }
+
+  .pv-composer {
+    width: min(720px, 100%);
+    margin: 0 auto;
+  }
+
+  [data-composer-card] {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 13px 14px 9px;
+  }
+
+  .pv-input {
+    width: 100%;
+    min-height: 38px;
+    padding: 2px 2px 0;
+    border: 0;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: var(--dsw-alias-label-primary);
+    font-family: inherit;
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+
+  .pv-input::placeholder {
+    color: var(--dsw-alias-label-caption);
+  }
+
+  .pv-composer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .pv-tools {
+    display: flex;
+    gap: 7px;
+  }
+
+  .pv-tool {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--dsw-alias-label-tertiary);
+    cursor: pointer;
+  }
+
+  .pv-tool:hover {
+    background: var(--dsw-alias-interactive-bg-hover);
+    color: var(--dsw-alias-label-primary);
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pv-send {
+    height: 28px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--dsw-alias-button-primary-fill);
+    box-shadow: var(--nt-raised-sm);
+    color: var(--dsw-alias-label-primary-foreground);
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pv-send:active {
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pv-controls {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 2147482000;
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border-radius: 999px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+  }
+
+  .pv-controls button {
+    height: 26px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--dsw-alias-label-secondary);
+    font-family: inherit;
+    font-size: 10.5px;
+    cursor: pointer;
+  }
+
+  .pv-controls button.active {
+    background: var(--dsw-alias-bg-layer-3);
+    box-shadow: var(--nt-inset-soft);
+    color: var(--dsw-alias-label-primary);
+  }
+
+  .pv-foot {
+    text-align: center;
+    padding-top: 2px;
+    font-size: 9.5px;
+    color: var(--dsw-alias-label-caption);
+  }
+
+  @media (max-width: 900px) {
+    .pv-frame { grid-template-columns: 1fr; }
+    .pv-sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pv-titlebar">
+  <span class="pv-traffic"><i></i><i></i><i></i></span>
+  <span class="pv-title">DeepSeek Harness</span>
+</div>
+
+<div class="pv-frame _frame">
+  <aside class="pv-sidebar _sidebarCol">
+    <div class="pv-brand">
+      <span class="pv-brand-mark">D</span>
+      <span>
+        <span class="pv-brand-name">DeepSeek</span>
+        <span class="pv-brand-sub">HARNESS · DESKTOP</span>
+      </span>
+    </div>
+
+    <button class="pv-newchat" type="button">＋ 新建对话</button>
+    <input class="pv-search" type="search" placeholder="搜索对话" aria-label="搜索对话">
+
+    <nav class="pv-nav">
+      <div class="pv-nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h7"/></svg>
+        对话
+      </div>
+      <div class="pv-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>
+        技能
+      </div>
+      <div class="pv-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v4M12 17v4M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/><circle cx="12" cy="12" r="3.6"/></svg>
+        插件
+      </div>
+      <div class="pv-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        设置
+      </div>
+    </nav>
+
+    <div class="pv-section">
+      <div class="pv-section-title">今天</div>
+      <div class="pv-thread active">拟态主题开发</div>
+      <div class="pv-thread">顶部刘海调试</div>
+      <div class="pv-thread">明暗两档对比</div>
+    </div>
+
+    <div class="pv-section">
+      <div class="pv-section-title">更早</div>
+      <div class="pv-thread">DSH 主题市场调研</div>
+      <div class="pv-thread">费用插件配置</div>
+      <div class="pv-thread">桌面端窗口结构</div>
+    </div>
+
+    <div class="pv-account">
+      <span class="pv-avatar">D</span>
+      <span>
+        <b>本地用户</b>
+        <span>DeepSeek Harness Desktop</span>
+      </span>
+    </div>
+  </aside>
+
+  <main class="pv-main _centerCol">
+    <header class="pv-header">
+      <div>
+        <h1>拟态主题开发</h1>
+        <p>deepseek-flash · 本地会话</p>
+      </div>
+      <span class="pv-chip"><i></i>已连接</span>
+    </header>
+
+    <div class="pv-scroll" data-conversation-session="preview-session">
+      <div class="pv-chat">
+        <div class="pv-user-row">
+          <div class="LOmM4q_bubble">
+            参考这几张手机主题截图，给 DSH 桌面端做一套拟态风格，明暗两种模式都要，顶部再做一个功能刘海。
+          </div>
+        </div>
+
+        <div class="pv-assistant">
+          <p>已经按拟态的三层结构搭好：底色是一整片冷灰，卡片浮在上面，输入框和凹槽压进去。顶部刘海把时间、今日费用和明暗开关收在同一颗胶囊里，点开还能看到农历和余额。</p>
+
+          <h2>阴影只有两组</h2>
+          <p>所有凸起元素共用一组<strong>左上亮影</strong>与<strong>右下暗影</strong>；所有凹陷元素把这两组影翻到内侧。暗色模式只是把两组影的颜色换掉，形状和位置不动。</p>
+
+          <pre><code>body {
+  --nt-raised:
+    8px 8px 18px rgba(159, 173, 189, .62),
+    -8px -8px 18px rgba(255, 255, 255, .96);
+  --nt-inset:
+    inset 3px 3px 7px rgba(159, 173, 189, .62),
+    inset -3px -3px 7px rgba(255, 255, 255, .96);
+}</code></pre>
+
+          <h2>两档颜色的骨架</h2>
+          <table>
+            <thead>
+              <tr><th>令牌</th><th>浅色</th><th>深色</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>底色</td><td>#e8edf2</td><td>#1d232b</td></tr>
+              <tr><td>主文字</td><td>#283440</td><td>#dbe4ed</td></tr>
+              <tr><td>品牌色</td><td>#2c7595</td><td>#6fc9df</td></tr>
+            </tbody>
+          </table>
+
+          <div class="pv-hint">
+            <span>提示</span>
+            <span>右上角的月亮按钮可以直接切换明暗；展开面板里的“跟随”会让主题重新跟随系统。</span>
+          </div>
+
+          <p>下一步是把侧栏的最近对话、输入卡里的工具按钮也逐个对齐阴影方向，避免同一屏出现两种光源。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pv-composer-wrap">
+      <div class="pv-composer">
+        <div data-composer-card>
+          <textarea class="pv-input" rows="1" placeholder="给 DeepSeek 发送消息…"></textarea>
+          <div class="pv-composer-bar">
+            <div class="pv-tools">
+              <button class="pv-tool" type="button" aria-label="附件">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 11.5 12.4 19a4.5 4.5 0 0 1-6.4-6.4l7.2-7.2a3 3 0 0 1 4.3 4.3l-7.2 7.2a1.5 1.5 0 0 1-2.1-2.1l6.6-6.6"/></svg>
+              </button>
+              <button class="pv-tool" type="button" aria-label="技能">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 2.4 5.1 5.6.7-4.1 3.8 1.1 5.5L12 15.4 7 18.1l1.1-5.5L4 8.8l5.6-.7z"/></svg>
+              </button>
+            </div>
+            <button class="pv-send" type="button">发送</button>
+          </div>
+        </div>
+        <div class="pv-foot">拟态主题会跟随本体令牌，不改变任何变量名。</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="pv-controls" aria-label="预览控制">
+  <button type="button" data-preview-mode="light">浅色</button>
+  <button type="button" data-preview-mode="dark">深色</button>
+</div>
+
+<script>
+  window.__NT_MOCK_COST__ = {
+    today: 3.42,
+    session: 5.10,
+    balance: 106.62,
+    peakWindow: { peak: true, label: '高峰', nextChangeAt: Date.now() + 35 * 60 * 1000 }
+  };
+</script>
+<script src="lib/client.js"></script>
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('[data-preview-mode]');
+    function sync() {
+      var dark = document.body.hasAttribute('data-ds-dark-theme');
+      for (var i = 0; i < buttons.length; i += 1) {
+        buttons[i].classList.toggle('active', buttons[i].getAttribute('data-preview-mode') === (dark ? 'dark' : 'light'));
+      }
+    }
+    for (var i = 0; i < buttons.length; i += 1) {
+      buttons[i].addEventListener('click', function () {
+        var mode = this.getAttribute('data-preview-mode');
+        if (mode === 'dark') document.body.setAttribute('data-ds-dark-theme', '');
+        else document.body.removeAttribute('data-ds-dark-theme');
+        sync();
+      });
+    }
+    sync();
+  })();
+</script>
+</body>
+</html>

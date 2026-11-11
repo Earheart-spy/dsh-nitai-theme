@@ -1,0 +1,47 @@
+/*
+ * 宽表（4 列及以上）收回正文阅读宽度。
+ *
+ * DSH 原本会让这类表格从正文列向左右两侧扩展到整个聊天区，宽度不够时靠表格
+ * 内部的横向滚动查看。滚动条平时隐藏，只有鼠标移上去才出现；一旦滚到最右端，
+ * 表格会整体左移一百多像素，看起来就和正文对不齐了。
+ *
+ * 下面这段把宽度收回到正文列，让单元格按内容分配宽度、超长文字自动换行，
+ * 从而不再产生横向滚动，表格左缘始终与正文对齐。
+ *
+ * 选择器只用了 md-table-wide 这个语义类名。它是渲染器在代码里直接写死的，
+ * 不带打包生成的哈希后缀，所以升级 DSH 版本后依然能命中。
+ *
+ * 单独放在 layout-fix.css，而不是写进 theme.css：升级主题主体、重新生成
+ * theme.css 时不会把这段一起覆盖掉；宿主的 readThemeCss() 会把两个文件
+ * 按顺序拼接后注入。
+ */
+
+.md-table-wide {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  padding-bottom: 0 !important;
+  overflow-x: visible !important;
+}
+
+.md-table-wide > table {
+  width: 100% !important;
+  max-width: 100% !important;
+  table-layout: auto;
+}
+
+.md-table-wide > table th,
+.md-table-wide > table td {
+  min-width: 0 !important;
+  max-width: none !important;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 单元格里的行内代码是一个 flex 盒子，默认不会换行，长路径会把整列撑宽。 */
+.md-table-wide > table :where(th, td) code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}

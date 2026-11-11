@@ -1,0 +1,6 @@
+# 本地验证环境、解包产物和依赖都不进版本库
+.dsh-home/
+.asar-extract/
+node_modules/
+*.bak
+*.bak-*

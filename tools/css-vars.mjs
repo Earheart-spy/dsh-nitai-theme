@@ -1,0 +1,15 @@
+﻿import fs from "node:fs";
+const p = ".asar-extract/design-platform.css";
+const raw = fs.readFileSync(p);
+const css = raw.toString("utf16le").replace(/^\uFEFF/, "");
+fs.writeFileSync(".asar-extract/design-platform.utf8.css", css, "utf8");
+const blocks = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m => ({ sel: m[1].trim(), body: m[2] }));
+console.log("blocks", blocks.length);
+console.log(blocks.map((b,i)=>`${i}: ${b.sel.slice(0,80)} (${b.body.length}ch)`).join("\n"));
+const parse = (body) => { const o={}; for (const d of body.split(";")) { const i=d.indexOf(":"); if(i<0) continue; const k=d.slice(0,i).trim(); if(k.startsWith("--")) o[k]=d.slice(i+1).trim(); } return o; };
+const light = blocks.find(b=>b.sel==="body");
+const dark = blocks.find(b=>b.sel.includes("data-ds-dark-theme"));
+fs.writeFileSync(".asar-extract/tokens-light.json", JSON.stringify(parse(light.body),null,2));
+fs.writeFileSync(".asar-extract/tokens-dark.json", JSON.stringify(parse(dark.body),null,2));
+console.log("light",Object.keys(parse(light.body)).length,"dark",Object.keys(parse(dark.body)).length);
+console.log("alias names sample:",Object.keys(parse(light.body)).filter(k=>k.includes("bg-")).slice(0,30));
