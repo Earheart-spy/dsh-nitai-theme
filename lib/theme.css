@@ -401,13 +401,37 @@ body[data-ds-dark-theme] ::selection {
 
 
 
+/*
+ * 三列统一成一张画布之后，原生布局仍然用 overflow:hidden 裁掉溢出内容。
+ * 拟态元素的外阴影大约向外延伸 17px，元素贴着列边界时阴影会被这条裁剪线切断，
+ * 在交界处留下一条笔直的竖边，整张画布看起来又被切成了几块。
+ * 这里把列改成 overflow:clip，并允许裁剪边界向外扩 24px，让阴影越过交界自然淡出；
+ * 对话外壳本身改成透明，否则它那层和画布同色的底色会盖住相邻列溢出的阴影。
+ */
 [class*="_sidebarCol"],
 [class*="_centerCol"],
 [class*="_rightbarCol"] {
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
+  overflow: clip !important;
+  overflow-clip-margin: 24px !important;
 }
+
+[class~="an3WzG_root"] {
+  background: transparent !important;
+}
+
+/* 侧栏里包住会话列表的那层容器同样是 overflow:hidden，用同样的办法放阴影出去。 */
+[class~="wtg9ga_regionArea"] {
+  overflow: clip !important;
+  overflow-clip-margin: 24px !important;
+}
+
+/*
+ * 会话列表是纵向滚动容器，滚动范围必须保持可滚动，不能像列那样把 overflow 改成 clip，
+ * 因此这里不处理它，改由列表里的条目自己用内凹画法规避裁剪（见下方会话行规则）。
+ */
 
 /*
  * 右栏和浮动控件：圆角比原生更大，避免侧边出现直角方块。
@@ -1194,10 +1218,17 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 
+/*
+ * 会话列表自身是纵向滚动容器，必须保留 overflow-y:auto 才能滚动。
+ * 实测滚动容器不会理会 overflow-clip-margin，条目阴影超出列表边缘时仍会被切掉，
+ * 所以列表里的条目改用“凹槽 + 内高光”的画法，阴影全部画在条目内部，不存在被裁剪的边。
+ */
 [class~="wnFoaW_sessionRow"],
 [class~="wnFoaW_projectRow"] {
   border-radius: 11px !important;
   margin: 1px 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   transition:
     background-color 0.18s ease,
     box-shadow 0.18s ease;
@@ -1205,8 +1236,8 @@ body[data-ds-dark-theme] .nt-daynum {
 
 [class~="wnFoaW_sessionRow"]:hover,
 [class~="wnFoaW_projectRow"]:hover {
-  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 62%, transparent) !important;
-  box-shadow: var(--nt-raised-sm) !important;
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 55%, transparent) !important;
+  box-shadow: var(--nt-inset-soft) !important;
 }
 
 [class~="wnFoaW_sessionRow"][class~="wnFoaW_selected"],
@@ -1214,8 +1245,8 @@ body[data-ds-dark-theme] .nt-daynum {
   color: var(--dsw-alias-label-primary) !important;
   background: var(--dsw-alias-bg-layer-2) !important;
   box-shadow:
-    var(--nt-raised-sm),
-    inset 0 1px 0 var(--nt-shadow-light) !important;
+    inset 0 1px 0 var(--nt-shadow-light),
+    0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 
@@ -1278,22 +1309,28 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 
+/*
+ * 标题栏这一排按钮夹在窗口上沿、内容边界和下方标签栏之间，是典型“贴着块边界”的情况。
+ * 做成凸起时，向上、向外的阴影会被窗口和列的边界切掉，相邻按钮的阴影还会互相重叠。
+ * 所以这一排改成平时不画背景，悬停和按下时向内凹：凹影落在按钮自己身上，永远不会被裁掉。
+ */
 [class~="an3WzG_headerActions"] button,
 [class~="an3WzG_headerUtilities"] button,
 [class~="an3WzG_headerCorner"] button {
   border-radius: 9px !important;
-  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 76%, transparent) !important;
-  box-shadow: var(--nt-raised-sm) !important;
+  background: transparent !important;
+  box-shadow: none !important;
   transition:
     background-color 0.18s ease,
-    box-shadow 0.18s ease;
+    box-shadow 0.18s ease,
+    color 0.18s ease;
 }
 
 [class~="an3WzG_headerActions"] button:hover,
 [class~="an3WzG_headerUtilities"] button:hover,
 [class~="an3WzG_headerCorner"] button:hover {
-  background: var(--dsw-alias-bg-layer-2) !important;
-  box-shadow: var(--nt-raised-sm) !important;
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-2) 82%, transparent) !important;
+  box-shadow: var(--nt-inset-soft) !important;
 }
 
 
