@@ -1167,6 +1167,7 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 [class~="wtg9ga_newSession"] {
+  margin: 0 13px 10px !important;
   border: 0 !important;
   background: var(--dsw-alias-bg-layer-2) !important;
   box-shadow: var(--nt-raised-sm) !important;
@@ -1180,6 +1181,28 @@ body[data-ds-dark-theme] .nt-daynum {
   background: var(--dsw-alias-bg-layer-3) !important;
   box-shadow: var(--nt-raised) !important;
   transform: translateY(-1px);
+}
+
+/*
+ * 导航这一组在 wtg9ga_scrollArea 里面，而 scrollArea 是纵向滚动容器，
+ * 它的滚动视口会在 x=4 与 x=278 两处把子元素的阴影直接切断：
+ * 左侧的白高光从 29 直接跳到 33，右侧的暗阴影从 26 直接跳回 29，
+ * 于是侧栏边缘出现一条竖直的硬边。
+ * 滚动容器不接受 overflow-clip-margin，唯一稳妥的办法是给容器加内边距，
+ * 让行宽缩到阴影能完整衰减的范围里（行右缘 259，到 278 还有 19px，
+ * 而 --nt-raised-sm 的外扩是 17px）。
+ * 同时把新建按钮缩到同样宽度，两者看起来仍然是齐的。
+ */
+[class~="wtg9ga_panelList"] {
+  padding: 4px 8px 0 !important;
+}
+
+/*
+ * “更多”这一行外面多包了一层锚点容器，宽度比其它导航行多 4px，
+ * 阴影因此又贴到滚动视口边缘。这里把容器再收 3px，让它的胶囊与上面几行对齐。
+ */
+[class~="wtg9ga_moreAnchor"] {
+  padding: 0 3px !important;
 }
 
 [class~="wtg9ga_panelRow"] {
@@ -1196,9 +1219,9 @@ body[data-ds-dark-theme] .nt-daynum {
 
 [class~="wtg9ga_panelRow"]:hover,
 [class~="wtg9ga_panelActive"] {
-  background: var(--dsw-alias-bg-layer-2) !important;
+  background: var(--dsw-alias-bg-layer-3) !important;
   color: var(--dsw-alias-label-primary) !important;
-  box-shadow: var(--nt-raised) !important;
+  box-shadow: var(--nt-raised-sm) !important;
 }
 
 
