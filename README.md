@@ -40,9 +40,23 @@
 | --- | --- |
 | ![预览亮色](docs/preview-light-panel.png) | ![预览暗色](docs/preview-dark-panel.png) |
 
+## 安装
+
+兼容 DSH >=0.2.0（官方 Desktop 与 `dsh web` 共用同一套 Web 界面，两边都能用）。
+
+```bash
+# 从 GitHub 安装（把 <owner> 换成仓库所属账号）
+dsh plugin add github:<owner>/dsh-nitai-theme
+
+# 或者在本机开发时直接用目录链接
+dsh plugin add link:C:/path/to/nitai-theme
+```
+
+装完完全退出 DeepSeek Harness 再打开：插件在宿主启动时注册主题样式注入，浏览器半区由 DSH 的客户端模块通道加载，运行中的窗口不会热加载。
+
 ## 安装状态
 
-已经装进本机的桌面端配置：
+本机已经装进桌面端配置：
 
 - 插件目录：`C:\Users\18385\Documents\dsh\nitai-theme`
 - 桌面端 profile：`C:\Users\18385\.dsh\profiles\desktop`
@@ -165,8 +179,8 @@ body.nt-has-costbar .dshcn-notch {
 DSH 的主题色是 CSS 自定义属性，运行时由布局插件把令牌写在 `body` 的行内样式里，所以普通选择器压不过它。这个插件分三块：
 
 1. `lib/index.js`（宿主侧）
-   - 监听 `webserver/index-inject`，往页面 `<body>` 开头插一段 `<style id="nitai-theme-css">`，再插一个 `<script src="/dsh-nitai-theme/client.js">`
-   - 注册 `/dsh-nitai-theme/client.js`、`/dsh-nitai-theme/theme.css`、`/dsh-nitai-theme/state.json` 和 `/dsh-nitai-theme/health` 四个本地路由
+   - 监听 `webserver/index-inject`，往页面 `<body>` 开头插一段 `<style id="nitai-theme-css">`，让首屏就有主题
+   - 注册 `/dsh-nitai-theme/theme.css`、`/dsh-nitai-theme/state.json` 和 `/dsh-nitai-theme/health` 三个本地路由
    - 监听会话的 `assistant/message` 事件，用 `lib/pricing.js` 的价格表累计今日和本次会话的费用
    - 样式放在 body 而不是 head，保证晚于 DSH 自己的样式表加载
 
@@ -188,7 +202,8 @@ DSH 的主题色是 CSS 自定义属性，运行时由布局插件把令牌写�
    - 主题升级重新生成 `theme.css`、把副本冲掉后，layout-fix.css 仍然会被追加，修复不会静默消失
    - 选择器只用渲染器写死的 `md-table-wide` 语义类名，不含 `xMeOpW`、`_tableScroll_1ypvv_192` 这类带构建哈希的类名，升级 DSH 后仍然有效
 
-4. `lib/client.js`（浏览器侧）
+4. `lib/client.js`（浏览器侧，走 DSH 的客户端模块通道）
+   - 由 `package.json` 的 `dsh.client` 与 `exports["./client"]` 声明，页面里的 `__ModuleLoader__` 加载后调用它导出的 `apply()`
    - 创建 `#nt-notch`、面板和所有交互
    - 每秒更新时钟，每 60 秒拉一次费用，每 5 秒检查一次 `dsh-cost-notch` 是否出现
    - 用 `MutationObserver` 盯 `body` 的 `data-ds-dark-theme`，在用户明确选过模式后保持该模式不被外部改回去
@@ -197,7 +212,7 @@ DSH 的主题色是 CSS 自定义属性，运行时由布局插件把令牌写�
    - 和 `dsh-cost-notch` 使用同一套价格表和峰谷时段规则，单位是元/百万 token
    - 缓存写入按 miss 价计费，推理 token 已包含在输出 token 里，不重复计算
 
-没有打包步骤，改完 `theme.css`、`layout-fix.css` 或 `client.js` 刷新页面就能看到；如果改的是宿主 `lib/index.js` 或新增了路由，就要完全退出桌面端再打开。
+没有打包步骤：`client.js` 直接按 DSH 客户端模块的格式（`window.__ModuleLoader__.load({...})`）写，改完 `theme.css`、`layout-fix.css` 或 `client.js` 刷新页面就能看到；如果改的是宿主 `lib/index.js`、`package.json` 或新增了路由，就要完全退出桌面端再打开。
 
 ### 宽表排版修复为什么单独成文件
 

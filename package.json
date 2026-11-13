@@ -1,6 +1,6 @@
 {
   "name": "dsh-nitai-theme",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "DeepSeek Harness 拟态（新拟态）主题与顶部功能刘海：明暗双模式、双向软阴影、时钟/日期/费用/明暗开关一体化。",
   "keywords": [
     "dsh",
@@ -14,6 +14,7 @@
   "main": "lib/index.js",
   "exports": {
     ".": "./lib/index.js",
+    "./client": "./lib/client.js",
     "./package.json": "./package.json"
   },
   "files": [
@@ -28,6 +29,9 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
     }
   },
   "license": "MIT"
