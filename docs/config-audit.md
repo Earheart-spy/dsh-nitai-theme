@@ -54,7 +54,23 @@ await window.__ntAudit(['raised-lg', 'inset-lg'])   // 指定档位
 - 工具提示要靠鼠标真实悬停才会挂载，自动化里用「注入同结构元素 + 核对 DSH 样式表里的选择器」两步代替，没有做人工悬停截图。
 - 这一轮无法验证的只有已经从清单里删掉的两项（任务面板、任务项），原因是当前 DSH 版本界面里不存在对应元素。
 
-## 四、如何复跑
+## 四、悬停 / 按下 / 选中三档的规则检查
+
+计算样式只能读「当前这一瞬间」的值，没法模拟鼠标悬停，所以另外做了一次规则文本检查：把每一项的 常态 / 悬停 / 选中 设成三个不同档位（凸起·中 / 凸起·小 / 内凹·深），重新生成样式表，确认三档各自都写出了独立规则。
+
+结论：全部 36 项都写出了三条规则，包括五个「选中」靠属性或类名而不是 `:active` 的项：
+
+| 配置项 | 选中态怎么判定 | 规则是否写出 |
+| --- | --- | --- |
+| 侧栏 · 导航行 | `[class~="wtg9ga_panelRow"][aria-current="page"]` | 是 |
+| 侧栏 · 会话行 | `[class~="wnFoaW_sessionRow"][aria-selected="true"]` | 是 |
+| 侧栏 · 工作区行 | `[class~="wnFoaW_projectRow"][aria-expanded="true"]` | 是 |
+| 会话头部 · 单个标签 | `[class~="an3WzG_tabActive"]` | 是 |
+| 浮层 · 菜单项 | `[role="menuitem"]:focus-visible` | 是 |
+
+这一项检查专门针对之前踩过的坑：导航的「选中」曾经被翻译成 CSS `:active`（只在按住鼠标那一刻成立），导致「点了之后没有任何变化」。
+
+## 五、如何复跑
 
 1. 用隔离的 `DSH_HOME` 起一个 web 实例：`DSH_HOME=…\.dsh-home dsh web --port 0 --no-open`。
 2. 打开页面后注入自检脚本：`<script src="/dsh-nitai-theme/_audit.js">`。
