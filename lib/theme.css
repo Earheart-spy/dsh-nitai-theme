@@ -93,6 +93,18 @@ body {
   --dsw-alias-border-inverted: rgba(255, 255, 255, 0.24) !important;
   --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.16) !important;
 
+  /*
+   * 文件改动（差异）视图的配色。原本是「浅绿/浅红整行底色 + 更深的行号列 + 3px 纯色竖条」，
+   * 三条饱和色在冷灰画布上像贴了三片荧光纸，也把卡片左侧的内边距整段盖住。
+   * 这里把底色压成一层很淡的染色，行号列不再单独上色，竖条只留一条细的、低饱和的记号。
+   */
+  --dsw-alias-file-diff-added-bg: rgba(64, 132, 101, 0.09) !important;
+  --dsw-alias-file-diff-added-gutter: transparent !important;
+  --dsw-alias-file-diff-added-marker: #3f7a5f !important;
+  --dsw-alias-file-diff-deleted-bg: rgba(168, 86, 74, 0.09) !important;
+  --dsw-alias-file-diff-deleted-gutter: transparent !important;
+  --dsw-alias-file-diff-deleted-marker: #96605a !important;
+
   
   --dsw-alias-label-primary: #283440 !important;
   --dsw-alias-label-secondary: #53616f !important;
@@ -239,6 +251,14 @@ body[data-ds-dark-theme] {
   --dsw-alias-border-inverted: rgba(0, 0, 0, 0.36) !important;
   --dsw-alias-border-inverted2: rgba(0, 0, 0, 0.24) !important;
 
+  /* 深色档的差异配色：底色只提一点点亮度，行号列透明，记号用低饱和的点缀色。 */
+  --dsw-alias-file-diff-added-bg: rgba(96, 196, 150, 0.11) !important;
+  --dsw-alias-file-diff-added-gutter: transparent !important;
+  --dsw-alias-file-diff-added-marker: #7fc9a5 !important;
+  --dsw-alias-file-diff-deleted-bg: rgba(214, 120, 110, 0.11) !important;
+  --dsw-alias-file-diff-deleted-gutter: transparent !important;
+  --dsw-alias-file-diff-deleted-marker: #d99b93 !important;
+
   --dsw-alias-label-primary: #dbe4ed !important;
   --dsw-alias-label-secondary: #a6b4c2 !important;
   --dsw-alias-label-tertiary: #8795a3 !important;
@@ -364,11 +384,13 @@ body[data-ds-dark-theme] ::selection {
   background-color: rgba(111, 201, 223, 0.26) !important;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--dsw-alias-scrollbar-bg-l1) transparent;
-}
-
+/*
+ * 这里刻意不写 scrollbar-width / scrollbar-color。
+ * Chromium 121 之后，只要给元素设了这两个标准属性中的任意一个，浏览器就不再采用
+ * ::-webkit-scrollbar-* 这套伪元素的样式——而「滚动条滑块」这一项凹凸配置正是画在
+ * ::-webkit-scrollbar-thumb 上的，一旦被忽略就完全看不出变化（用户实测就是“配了不生效”）。
+ * 所以滚动条统一走下面的 webkit 伪元素写法，宽度、圆角、hover 颜色都由它控制。
+ */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -508,13 +530,13 @@ body[data-ds-dark-theme] [class*="bubble"]:not([class*="bubbleContent"]):not([cl
 }
 
 
-[class*="_card"]:not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+[class*="_card"]:not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
   border-radius: 20px !important;
   border: 1px solid var(--nt-hairline) !important;
   box-shadow: var(--nt-raised-sm) !important;
 }
 
-body[data-ds-dark-theme] [class*="_card"]:not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+body[data-ds-dark-theme] [class*="_card"]:not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
   border: 1px solid var(--nt-hairline) !important;
 }
 
@@ -609,8 +631,54 @@ tbody td {
   border-top: 1px solid var(--dsw-alias-border-l3) !important;
 }
 
+/*
+ * 文件改动（差异）视图：类名来自 @deepseek-ai/dsh-client-ui-deliverables 的 FileDiff 模块，
+ * 前缀 _0cITKW_ 是构建产物里的哈希，DSH 升级后可能变化；变了只会让下面几条失效，
+ * 上面的配色变量仍然生效，不会毁掉页面。
+ *
+ * 原来左侧是一整列纯色行号格（浅绿/浅红）+ 行首 3px 纯色竖条，而容器左内边距是 0，
+ * 于是色条贴着卡片边缘顶出去，看起来像贴纸。这里做三件事：
+ * 1. 给容器补回左右内边距，色块不再贴边；
+ * 2. 行号格不再上色（变量已置透明），只保留行底色的淡染；
+ * 3. 把 3px 的硬竖条换成行内 2px 的柔和记号，并给行本身加圆角。
+ */
+[class*="_0cITKW_body"] {
+  padding: 8px 10px 16px !important;
+}
 
-input[type="text"]:not([data-composer-card] *),
+[class*="_0cITKW_hunkHeader"],
+[class*="_0cITKW_note"] {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+[class*="_0cITKW_add"],
+[class*="_0cITKW_del"] {
+  border-radius: 4px;
+}
+
+[class*="_0cITKW_add"] [class*="_0cITKW_number"]:first-child,
+[class*="_0cITKW_del"] [class*="_0cITKW_number"]:first-child {
+  box-shadow: none !important;
+}
+
+/*
+ * 行首的 3px 竖条一并去掉：每行单独画一条会被行圆角切成断续的小竖线，反而更碎。
+ * 现在只靠很淡的行底色和「+ / −」符号的颜色表达增删，画面回到一张干净的纸。
+ */
+[class*="_0cITKW_add"] [class*="_0cITKW_number"],
+[class*="_0cITKW_del"] [class*="_0cITKW_number"] {
+  background: transparent !important;
+  opacity: 0.78;
+}
+
+
+/*
+ * 通用输入框的内凹只给独立存在的输入框。
+ * 侧栏搜索框的凹槽画在它外面的 GAkraW_search 上（见后面的搜索框小节），
+ * 这里把它排除掉，否则输入框自己再内凹一次，又变回两层阴影。
+ */
+input[type="text"]:not([data-composer-card] *):not([class*="searchInput"]),
 input[type="search"]:not([data-composer-card] *),
 input[type="password"]:not([data-composer-card] *),
 input[type="email"]:not([data-composer-card] *),
@@ -1152,6 +1220,234 @@ body[data-ds-dark-theme] .nt-daynum {
   display: none !important;
 }
 
+/*
+ * 元素凹凸设置面板。
+ * 这是刘海面板点「元素凹凸」后弹出的整页浮层：左边一行一个元素（勾选框 + 名字 + 一句说明），
+ * 右边是常态 / 悬停 / 选中 三档的下拉。面板本身是大圆角凸起，里面的行留白很宽，
+ * 目的是让人一眼看清每一档现在的效果，而不是塞得满满当当。
+ */
+.nt-sheet[hidden] {
+  display: none !important;
+}
+
+.nt-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dsw-alias-label-primary);
+  font-family: var(--dsw-font-family);
+}
+
+.nt-sheet-mask {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(18, 24, 31, 0.34);
+  backdrop-filter: blur(3px);
+}
+
+.nt-sheet-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(900px, calc(100vw - 72px));
+  max-height: min(780px, calc(100vh - 96px));
+  overflow: hidden;
+  border-radius: 26px;
+  background-color: var(--dsw-alias-bg-layer-1);
+  box-shadow: var(--nt-raised-lg);
+}
+
+.nt-sheet-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 22px 15px;
+  border-bottom: 1px solid var(--dsw-alias-border-l3);
+}
+
+.nt-sheet-head b {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+}
+
+.nt-sheet-head span {
+  display: block;
+  margin-top: 5px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-sheet-close {
+  margin-left: auto;
+  flex: none;
+  transform: rotate(180deg);
+}
+
+.nt-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 14px 16px;
+}
+
+.nt-sheet-group {
+  margin: 18px 8px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--dsw-alias-label-caption);
+}
+
+.nt-sheet-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 9px 10px;
+  border-radius: 16px;
+}
+
+.nt-sheet-row:hover {
+  background-color: var(--dsw-alias-interactive-bg-hover);
+}
+
+.nt-sheet-pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.nt-sheet-pick input {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 2px 0 0;
+  accent-color: var(--dsw-alias-brand-primary);
+  cursor: pointer;
+}
+
+.nt-sheet-text {
+  display: block;
+  min-width: 0;
+}
+
+.nt-sheet-name {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 520;
+}
+
+.nt-sheet-note {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  font-style: normal;
+  line-height: 1.5;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-sheet-states {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.nt-sheet-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--dsw-alias-label-secondary);
+  white-space: nowrap;
+}
+
+.nt-sheet-state select {
+  height: 26px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 9px;
+  background-color: var(--dsw-alias-bg-layer-2);
+  box-shadow: var(--nt-inset-soft);
+  color: var(--dsw-alias-label-primary);
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nt-sheet-state select:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.nt-sheet-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border-top: 1px solid var(--dsw-alias-border-l3);
+  background-color: var(--dsw-alias-bg-layer-2);
+}
+
+.nt-sheet-message {
+  margin-right: auto;
+  font-size: 11.5px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.nt-sheet-message[data-tone="ok"] {
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.nt-sheet-message[data-tone="error"] {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.nt-sheet-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background-color: var(--dsw-alias-bg-layer-1);
+  box-shadow: var(--nt-raised-sm);
+  color: var(--dsw-alias-label-primary);
+  font-family: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.nt-sheet-btn:hover {
+  box-shadow: var(--nt-raised);
+  transform: translateY(-1px);
+}
+
+.nt-sheet-btn:active {
+  box-shadow: var(--nt-inset-soft);
+  transform: none;
+}
+
+.nt-sheet-btn-primary {
+  background-color: var(--dsw-alias-brand-primary);
+  color: var(--dsw-alias-label-primary-foreground);
+}
+
+@media (max-width: 720px) {
+  .nt-sheet-row {
+    grid-template-columns: 1fr;
+  }
+
+  .nt-sheet-states {
+    justify-content: flex-start;
+  }
+}
+
 
 
 
@@ -1217,11 +1513,29 @@ body[data-ds-dark-theme] .nt-daynum {
     color 0.18s ease;
 }
 
+/*
+ * 当前打开的那一项导航由 DSH 用 aria-current="page" 标记。
+ * 旧版本这里写的是 wtg9ga_panelActive 类，新版已经没有这个类，
+ * 于是「选中」和「未选中」看起来完全一样，这里改成属性选择器。
+ */
 [class~="wtg9ga_panelRow"]:hover,
-[class~="wtg9ga_panelActive"] {
+[class~="wtg9ga_panelRow"][aria-current="page"] {
   background: var(--dsw-alias-bg-layer-3) !important;
   color: var(--dsw-alias-label-primary) !important;
   box-shadow: var(--nt-raised-sm) !important;
+}
+
+/*
+ * DSH 自己的悬停反馈不是画在这一行上，而是画在外面那层 wtg9ga_panelEntry 上：
+ * 鼠标移入时给外层涂一层半透明底色（interactive-bg-hover），选中项（panelEntryActive）
+ * 和键盘聚焦时也一样。主题把胶囊画在里层的 panelRow 上，并给这一行留了外边距，
+ * 于是外层那层底色就从胶囊四周露出一圈，看上去像“内凹外面又套了一圈内边距阴影”。
+ * 这里把外层底色关掉，悬停只保留胶囊本身的凸起，四周与画布完全同色。
+ */
+[class~="wtg9ga_panelEntry"]:hover,
+[class~="wtg9ga_panelEntryActive"],
+[class~="wtg9ga_panelEntry"]:has(:focus-visible) {
+  background-color: transparent !important;
 }
 
 
@@ -1232,12 +1546,68 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 
-[class*="_sidebarCol"] [class*="search"]:has(input),
-[class*="_sidebarCol"] input[type="search"] {
+/*
+ * 「工作区」标题右侧的三颗小图标（放大镜、视图选项、添加工作区）都是 28px 的
+ * GAkraW_iconButton / GAkraW_searchButton，彼此只隔 4px。
+ * 试过给它们加常规凸起，结果两颗相邻按钮的暗影在 4px 的缝里互相压住，
+ * 中间出现一条硬接缝，所以这里改成和会话头部工具按钮同一套做法：
+ * 常态与画布同色（看不见按钮的边界），悬停时向内凹一档，按下再深一档。
+ * 内凹的阴影画在按钮内部，不会溢出到邻居身上。
+ */
+[class~="GAkraW_iconButton"],
+[class~="GAkraW_searchButton"] {
+  border-radius: 10px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+[class~="GAkraW_iconButton"]:hover,
+[class~="GAkraW_searchButton"]:hover {
+  background-color: var(--dsw-alias-bg-layer-3) !important;
+  box-shadow: var(--nt-inset-soft) !important;
+}
+
+[class~="GAkraW_iconButton"]:active,
+[class~="GAkraW_searchButton"]:active {
+  box-shadow: var(--nt-inset) !important;
+}
+
+
+/*
+ * 侧栏搜索框在展开时是三层嵌套：最外层 GAkraW_search 是那颗可见的胶囊，
+ * 中间 GAkraW_searchSlot 只负责动画占位，最里层 GAkraW_searchInput 才是输入框。
+ * 旧写法按“类名里带 search”匹配，三层同时内凹，于是叠出两圈阴影，
+ * 外面还套一圈聚焦描边，看起来像套娃。这里只让最外层保留凹槽，
+ * 内两层全部做平；聚焦时不再描蓝边，改成让凹槽本身再深一档。
+ */
+[class~="GAkraW_search"] {
   border: 0 !important;
   border-radius: 12px !important;
-  background: var(--dsw-alias-bg-layer-1) !important;
+  background: var(--dsw-alias-bg-layer-2) !important;
   box-shadow: var(--nt-inset-soft) !important;
+  transition: box-shadow 0.18s ease;
+}
+
+[class~="GAkraW_searchSlot"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+[class~="GAkraW_searchInput"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+[class~="GAkraW_search"]:focus-within {
+  box-shadow: var(--nt-inset) !important;
+}
+
+[class~="GAkraW_searchInput"]:focus-visible {
+  outline: none !important;
 }
 
 
