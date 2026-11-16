@@ -356,6 +356,14 @@ node tools/check-opencode.mjs   # 额度表、三档换算、文档解析、两�
 
 两个脚本都是“有问题就 exit 1”，可以直接串在提交前跑。
 
+### 配置项是否真的生效
+
+“个性化配置”里的每一项都可以在真实页面里逐个验证，不用靠肉眼看截图：加载 `tools/audit-surfaces.js`（插件提供调试路由 `/dsh-nitai-theme/_audit.js`），然后执行 `await window.__ntAudit()`。它会把每一项依次设成凸起·中、内凹·深、平面三档，刷新注入的样式表，再读回目标元素的计算样式做比对。
+
+返回结果里 `ok` 表示生效，`no-element` 表示当前界面还没有那个元素（先把对应界面打开，比如菜单、弹窗、右侧边栏），`fail:` 开头表示规则没落到元素上。
+
+逐项结论写在 [docs/config-audit.md](docs/config-audit.md)：哪些项验证过、修了哪些过期选择器、这一版界面上不存在的项为什么被移除。
+
 ## 在隔离环境里验证（不碰正在用的 DSH）
 
 ```powershell
