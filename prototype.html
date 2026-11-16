@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>元素状态配置草案 · 新拟态主题</title>
+<!-- 这一页是给用户看、给用户点的原型：样式直接引用主题自己的 theme.css，所以看到的凸起/内凹就是插件里的真实效果 -->
+<link rel="stylesheet" href="lib/theme.css">
+<link rel="stylesheet" href="lib/layout-fix.css">
+<style>
+  /* 这一页自己只负责排版，凸起与内凹的观感全部来自 lib/theme.css 里的 --nt-raised / --nt-inset 变量。 */
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    background: var(--dsw-alias-bg-base);
+    color: var(--dsw-alias-label-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  /* 顶部工具条：固定在顶上，滚动时始终能看到按钮 */
+  .pr-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    background: color-mix(in srgb, var(--dsw-alias-bg-base) 88%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: inset 0 -1px 0 var(--dsw-alias-border-l3);
+  }
+
+  .pr-bar-title strong {
+    display: block;
+    font-size: 15px;
+    letter-spacing: .01em;
+  }
+
+  .pr-bar-title span {
+    display: block;
+    margin-top: 2px;
+    max-width: 620px;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 12px;
+  }
+
+  .pr-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* 通用小按钮：本身就是新拟态凸起，切到深色也能看清 */
+  .pr-btn {
+    padding: 7px 13px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+    color: var(--dsw-alias-label-secondary);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color .18s ease, box-shadow .18s ease;
+  }
+
+  .pr-btn:hover {
+    color: var(--dsw-alias-label-primary);
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pr-btn[aria-pressed="true"] {
+    color: var(--dsw-alias-brand-primary);
+    box-shadow: var(--nt-inset-soft);
+  }
+
+  .pr-btn-primary {
+    color: var(--dsw-alias-bg-base);
+    background: var(--dsw-alias-brand-primary);
+    box-shadow: 0 6px 14px -6px rgba(16, 24, 40, .45);
+  }
+
+  .pr-btn-primary:hover {
+    color: var(--dsw-alias-bg-base);
+    box-shadow: 0 8px 18px -6px rgba(16, 24, 40, .5);
+  }
+
+  /* 左侧目录：桌面宽屏时固定，窄屏自动变成横向滚动条 */
+  .pr-layout {
+    display: grid;
+    grid-template-columns: 172px minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
+    /* 底部留出输出面板的高度，滚到最底时不会被它盖住 */
+    padding: 18px 22px 210px;
+  }
+
+  .pr-toc {
+    position: sticky;
+    top: 88px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 10px;
+    border-radius: 16px;
+    background: var(--dsw-alias-bg-layer-2);
+    box-shadow: var(--nt-raised-sm);
+  }
+
+  .pr-toc a {
+    padding: 6px 9px;
+    border-radius: 8px;
+    color: var(--dsw-alias-label-secondary);
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  .pr-toc a:hover {
+    color: var(--dsw-alias-label-primary);
+    background: var(--dsw-alias-bg-layer-3);
+  }
+
+  .pr-group {
+    margin: 0 0 26px;
+  }
+
+  .pr-group-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 10px;
+    padding: 0 2px;
+  }
+
+  .pr-group-head h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .pr-group-head span {
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 12px;
+  }
+
+  /* 每一行 = 一个元素：左边说明，中间三种状态的实物预览，右边配置控件 */
+  .pr-item {
+    display: grid;
+    grid-template-columns: minmax(190px, 236px) minmax(0, 1fr) 274px;
+    gap: 14px;
+    align-items: center;
+    margin: 0 0 6px;
+    padding: 9px 12px;
+    border-radius: 14px;
+    /* 行底色比画布亮一档 + 一道发丝边：深色模式下也能看出每行是一块，扫读时不会串行 */
+    background: var(--dsw-alias-bg-layer-2);
+    border: 1px solid var(--dsw-alias-border-l3);
+    box-shadow: var(--nt-raised-sm);
+  }
+
+  .pr-item[data-off="1"] {
+    box-shadow: none;
+    background: transparent;
+    opacity: .62;
+  }
+
+  .pr-name {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+  }
+
+  .pr-name b {
+    font-weight: 600;
+  }
+
+  .pr-tag {
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: var(--dsw-alias-bg-layer-3);
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 10px;
+    letter-spacing: .02em;
+  }
+
+  .pr-tag-p0 {
+    color: var(--dsw-alias-state-business-primary);
+  }
+
+  .pr-note {
+    margin: 3px 0 0;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 11.5px;
+  }
+
+  .pr-note code {
+    padding: 0 4px;
+    border-radius: 4px;
+    background: var(--dsw-alias-markdown-code-block);
+    font-size: 10.5px;
+  }
+
+  /* 元素对应的真实 DOM 类名，方便对照到页面上的具体控件 */
+  .pr-sel {
+    display: inline-block;
+    margin: 4px 0 0;
+    padding: 0 5px;
+    border-radius: 5px;
+    background: var(--dsw-alias-markdown-code-block);
+    color: var(--dsw-alias-label-tertiary);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 10px;
+    line-height: 1.7;
+  }
+
+  /* 真实界面截图：横跨预览区一整行，宽裁图也能看清；点开可看原尺寸 */
+  .pr-shot-row {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 2px;
+    text-decoration: none;
+  }
+
+  .pr-shot {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 56px;
+    border-radius: 8px;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .pr-shot-row:hover .pr-shot {
+    box-shadow: 0 0 0 1px var(--dsw-alias-brand-primary);
+  }
+
+  .pr-shot-tag {
+    flex: none;
+    color: var(--dsw-alias-label-dimmed);
+    font-size: 10px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+
+  .pr-shot-none {
+    display: inline-block;
+    margin-top: 7px;
+    color: var(--dsw-alias-label-dimmed);
+    font-size: 10.5px;
+  }
+
+  /* 预览格：三列并排，格子上写状态名 */
+  .pr-samples {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .pr-sample {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    padding: 8px 7px 5px;
+    border-radius: 12px;
+    background: var(--dsw-alias-bg-base);
+  }
+
+  .pr-sample i {
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 10px;
+    font-style: normal;
+    letter-spacing: .03em;
+  }
+
+  /* 光看阴影很难分辨「凸起小」和「凸起中」，所以把当前选中的样式名写在下面，选了什么一目了然 */
+  .pr-sample em {
+    margin-top: -2px;
+    color: var(--dsw-alias-label-dimmed);
+    font-size: 9.5px;
+    font-style: normal;
+    letter-spacing: .02em;
+  }
+
+  /* 预览里的“控件本体”，凸起/内凹由 JS 按选择结果挂 data-style 决定 */
+  .pr-demo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 11px;
+    background: var(--dsw-alias-bg-layer-3);
+    color: var(--dsw-alias-label-secondary);
+    font-size: 11px;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pr-demo-wide {
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .pr-demo-pill {
+    border-radius: 999px;
+  }
+
+  .pr-demo[data-style="raised-sm"] { box-shadow: var(--nt-raised-sm); }
+  .pr-demo[data-style="raised-md"] { box-shadow: var(--nt-raised); }
+  .pr-demo[data-style="raised-lg"] { box-shadow: var(--nt-raised-lg); }
+  .pr-demo[data-style="inset-sm"] { box-shadow: var(--nt-inset-soft); }
+  .pr-demo[data-style="inset-md"] { box-shadow: var(--nt-inset); }
+  .pr-demo[data-style="flat"] { box-shadow: none; }
+  .pr-demo[data-style="outline"] {
+    box-shadow: none;
+    border: 1px solid var(--dsw-alias-border-l3);
+    background: transparent;
+  }
+
+  .pr-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .pr-check {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--dsw-alias-label-secondary);
+  }
+
+  .pr-check input {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--dsw-alias-brand-primary);
+  }
+
+  .pr-selects {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .pr-selects label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    color: var(--dsw-alias-label-tertiary);
+    font-size: 10.5px;
+  }
+
+  .pr-selects select {
+    width: 100%;
+    padding: 5px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--dsw-alias-bg-base);
+    box-shadow: var(--nt-inset-soft);
+    color: var(--dsw-alias-label-primary);
+    font: inherit;
+    font-size: 11.5px;
+  }
+
+  .pr-selects select:disabled {
+    opacity: .5;
+  }
+
+  /* 底部输出区：随点随变，复制走剪贴板 */
+  .pr-out {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    padding: 10px 22px 12px;
+    background: color-mix(in srgb, var(--dsw-alias-bg-base) 92%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 0 var(--dsw-alias-border-l3);
+  }
+
+  .pr-out-head {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--dsw-alias-label-secondary);
+  }
+
+  .pr-out-head b {
+    color: var(--dsw-alias-label-primary);
+  }
+
+  .pr-out-head .pr-btn {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  #pr-json {
+    display: none;
+    width: 100%;
+    height: 96px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--dsw-alias-bg-base);
+    box-shadow: var(--nt-inset-soft);
+    color: var(--dsw-alias-label-secondary);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.6;
+    resize: none;
+  }
+
+  .pr-out[data-open="1"] #pr-json {
+    display: block;
+  }
+
+  .pr-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 130px;
+    z-index: 40;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: var(--dsw-alias-tooltip-bg);
+    color: var(--dsw-alias-toast-label);
+    font-size: 12px;
+    transform: translate(-50%, 8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+
+  .pr-toast[data-show="1"] {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+
+  @media (max-width: 1180px) {
+    .pr-item { grid-template-columns: minmax(0, 1fr) 260px; }
+    .pr-samples { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 900px) {
+    .pr-layout { grid-template-columns: minmax(0, 1fr); }
+    .pr-toc { position: static; flex-direction: row; flex-wrap: wrap; }
+    .pr-item { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="pr-bar">
+  <div class="pr-bar-title">
+    <strong>元素状态配置草案</strong>
+    <span>勾「纳入配置」，再给默认 / 悬停 / 选中共样式的样式。中间三格是真实效果，左边小图是界面里的实际控件，底部 JSON 会跟着变。</span>
+  </div>
+  <div class="pr-bar-actions">
+    <button class="pr-btn" id="pr-mode" type="button">切到深色</button>
+    <button class="pr-btn" id="pr-p0" type="button" aria-pressed="false">只看 P0</button>
+    <button class="pr-btn" id="pr-reset" type="button">恢复默认</button>
+    <button class="pr-btn pr-btn-primary" id="pr-copy" type="button">复制配置</button>
+  </div>
+</header>
+
+<div class="pr-layout">
+  <nav class="pr-toc" id="pr-toc"></nav>
+  <main id="pr-list"></main>
+</div>
+
+<section class="pr-out" id="pr-out">
+  <div class="pr-out-head">
+    <b>将要提交的配置</b>
+    <span id="pr-count">已勾选 0 项</span>
+    <button class="pr-btn" id="pr-toggle" type="button" aria-expanded="false">展开 JSON</button>
+    <button class="pr-btn pr-btn-primary" id="pr-copy" type="button">复制配置</button>
+  </div>
+  <textarea id="pr-json" readonly spellcheck="false"></textarea>
+</section>
+
+<div class="pr-toast" id="pr-toast">已复制</div>
+
+<script>
+/* 这一页是纯前端原型，不读插件状态：所有数据写在下面，改动只影响本页与 localStorage。 */
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'dsh-nitai-prototype.states';
+
+  /* 可选的样式取值：空字符串表示“这一态不单独配置，跟随主题默认” */
+  var STYLE_OPTIONS = [
+    ['', '不单独配'],
+    ['raised-sm', '凸起 小'],
+    ['raised-md', '凸起 中'],
+    ['raised-lg', '凸起 大'],
+    ['inset-sm', '内凹 弱'],
+    ['inset-md', '内凹 强'],
+    ['flat', '平面'],
+    ['outline', '描边']
+  ];
+
+  /* 分组顺序与说明；id 用作 TOC 锚点 */
+  var GROUPS = [
+    ['a', 'A · 全局画布', '整窗底色、滚动条、焦点环。这些是“整体画布”的前提，多数不建议做成可选项。'],
+    ['b', 'B · 侧栏', '新会话按钮、导航行、会话行、搜索框、账户卡。'],
+    ['c', 'C · 会话头部', '标签条容器与单个标签、右上工具按钮。'],
+    ['d', 'D · 对话正文', '用户气泡、代码块、表格、工具调用卡、消息操作条。'],
+    ['e', 'E · 输入区', '输入卡、卡内工具按钮、发送按钮、附件卡。'],
+    ['f', 'F · 右栏', '右栏标签栏、任务面板、任务项、工具卡。'],
+    ['g', 'G · 浮层', '菜单、菜单项、弹窗、提示、悬停预览卡。'],
+    ['h', 'H · 刘海（本插件）', '胶囊本体、图标按钮、展开面板、统计槽、分段控件。']
+  ];
+
+  /* 每个元素：states 里的键就是可配置的状态，值是“现在主题里的实际做法” */
+  var ITEMS = [
+    { id: 'canvas', group: 'a', name: '窗口画布与三列', prio: 0, configurable: false,
+      note: '侧栏 / 中部 / 右栏同底色、无阴影，这是“一片画布”的前提，不建议做成选项。' },
+
+    { id: 'scrollbar', group: 'a', name: '滚动条滑块', prio: 2, now: '细条，悬停变深',
+      states: { default: 'flat', hover: 'inset-sm' } },
+
+    { id: 'focus-ring', group: 'a', name: '焦点环（功能性）', prio: 2, configurable: false,
+      note: '键盘 Tab 时的焦点指示，属于无障碍要求。要做也只能调颜色和 1–3px 粗细，不建议给隐藏选项。' },
+
+    { id: 'new-session', group: 'b', name: '新会话按钮', prio: 0, now: '凸起小，悬停浮起',
+      note: '滚动区外的按钮，可以放心用大一点的凸起。', states: { default: 'raised-sm', hover: 'raised-md' } },
+
+    { id: 'nav-row', group: 'b', name: '导航行（插件 / 自动化任务 / 更多）', prio: 0, now: '凸起小，选中同款',
+      note: '在纵向滚动容器里，只能用“小号凸起”；大号会被视口边缘切断。', states: { default: 'raised-sm', hover: 'raised-sm', active: 'inset-sm' } },
+
+    { id: 'session-row', group: 'b', name: '会话行', prio: 0, now: '透明，悬停浅凸起，选中凸起中',
+      states: { default: 'flat', hover: 'raised-sm', active: 'raised-md' } },
+
+    { id: 'project-row', group: 'b', name: '工作区 / 项目行', prio: 1, now: '同会话行',
+      states: { default: 'flat', hover: 'raised-sm', active: 'raised-md' } },
+
+    { id: 'search', group: 'b', name: '搜索框', prio: 1, now: '内凹弱',
+      states: { default: 'inset-sm', hover: 'inset-md' } },
+
+    { id: 'section-label', group: 'b', name: '分组标题（今天 / 更早）', prio: 2, configurable: false,
+      note: '纯文字，加阴影会显得脏；只保留字号与字距调整。' },
+
+    { id: 'account-card', group: 'b', name: '底部账户卡', prio: 2, now: '凸起小',
+      states: { default: 'raised-sm', hover: 'raised-md' } },
+
+    { id: 'sidebar-gap', group: 'b', name: '侧栏滚动区留白', prio: 1, configurable: false,
+      note: '这是数值不是样式：左侧 8px、顶部 4px，用来给 5px 偏移 + 12px 模糊留出衰减空间。' },
+
+    { id: 'header', group: 'c', name: '会话头部容器', prio: 2, now: '透明 + 底部内阴影',
+      states: { default: 'flat' } },
+
+    { id: 'tabstrip', group: 'c', name: '标签条容器', prio: 1, now: '内凹弱（凹槽）',
+      states: { default: 'inset-sm' } },
+
+    { id: 'tab', group: 'c', name: '单个标签（对话 / 轨迹 / 上下文 / 上级 / 编队）', prio: 0, now: '透明，悬停内凹，选中凸起小 + 品牌色',
+      note: 'P0 里最显眼的一处：选中态是胶囊还是下划线，完全由这里决定。', states: { default: 'flat', hover: 'inset-sm', active: 'raised-sm' } },
+
+    { id: 'header-actions', group: 'c', name: '右上工具按钮', prio: 1, now: '透明，悬停内凹',
+      note: '贴着内容区左右边缘，只能用内凹，否则阴影会被裁。', states: { default: 'flat', hover: 'inset-sm' } },
+
+    { id: 'crumb', group: 'c', name: '标题面包屑', prio: 2, configurable: false, note: '文字层级，不做阴影。' },
+
+    { id: 'bubble', group: 'd', name: '用户气泡', prio: 0, now: '凸起中',
+      states: { default: 'raised-md' } },
+
+    { id: 'assistant', group: 'd', name: '助手消息本体', prio: 2, configurable: false,
+      note: '正文直接铺在画布上；加阴影会像一堆卡片堆在一起。' },
+
+    { id: 'code', group: 'd', name: '代码块', prio: 1, now: '内凹弱',
+      states: { default: 'inset-sm', hover: 'inset-sm' } },
+
+    { id: 'inline-code', group: 'd', name: '行内代码', prio: 2, now: '内凹弱',
+      states: { default: 'inset-sm' } },
+
+    { id: 'table', group: 'd', name: '表格 / 表头', prio: 2, now: '凸起小，表头亮一档',
+      states: { default: 'raised-sm' } },
+
+    { id: 'tool-card', group: 'd', name: '工具调用卡 / 思考块', prio: 1, now: '凸起小',
+      states: { default: 'raised-sm', hover: 'raised-md', active: 'inset-sm' } },
+
+    { id: 'msg-actions', group: 'd', name: '消息悬停操作条（复制 / 重试）', prio: 1, now: '浮起胶囊',
+      states: { hover: 'raised-md' } },
+
+    { id: 'composer', group: 'e', name: '输入卡', prio: 0, now: '凸起大',
+      note: '整个界面视觉重心，凸起大 + 焦点时不变形是现在的做法。', states: { default: 'raised-lg', hover: 'raised-lg' } },
+
+    { id: 'composer-buttons', group: 'e', name: '卡内工具按钮（附件 / 模式 / 模型）', prio: 1, now: '透明，悬停内凹',
+      states: { default: 'flat', hover: 'inset-sm' } },
+
+    { id: 'send', group: 'e', name: '发送按钮', prio: 1, now: '圆形凸起，悬停浮起',
+      states: { default: 'raised-sm', hover: 'raised-md' } },
+
+    { id: 'attach', group: 'e', name: '附件预览卡', prio: 2, now: '凸起小',
+      states: { default: 'raised-sm', hover: 'raised-md' } },
+
+    { id: 'right-tabs', group: 'f', name: '右栏标签栏', prio: 2, now: '内凹弱',
+      states: { default: 'inset-sm' } },
+
+    { id: 'task-panel', group: 'f', name: '任务面板', prio: 1, now: '凸起中',
+      states: { default: 'raised-md' } },
+
+    { id: 'task-item', group: 'f', name: '任务项', prio: 2, now: '透明，悬停内凹',
+      states: { default: 'flat', hover: 'inset-sm' } },
+
+    { id: 'entry-card', group: 'f', name: '工具卡', prio: 2, now: '原生 1px 描边',
+      states: { default: 'outline', hover: 'raised-sm' } },
+
+    { id: 'menu', group: 'g', name: '下拉菜单面板', prio: 1, now: '凸起大 + 毛玻璃',
+      states: { default: 'raised-lg' } },
+
+    { id: 'menu-item', group: 'g', name: '菜单项', prio: 0, now: '悬停内凹，当前项内凹加深',
+      states: { default: 'flat', hover: 'inset-sm', active: 'inset-md' } },
+
+    { id: 'dialog', group: 'g', name: '弹窗', prio: 1, now: '凸起大',
+      states: { default: 'raised-lg' } },
+
+    { id: 'dialog-primary', group: 'g', name: '弹窗主按钮', prio: 1, now: '凸起小',
+      states: { default: 'raised-sm', hover: 'raised-md' } },
+
+    { id: 'tooltip', group: 'g', name: '工具提示 / Toast', prio: 2, now: '凸起小',
+      states: { default: 'raised-sm' } },
+
+    { id: 'hover-card', group: 'g', name: '侧栏悬停预览卡', prio: 1, now: '凸起中',
+      states: { default: 'raised-md' } },
+
+    { id: 'notch', group: 'h', name: '刘海胶囊本体', prio: 0, now: '凸起中',
+      states: { default: 'raised-md', hover: 'raised-lg' } },
+
+    { id: 'notch-icon', group: 'h', name: '刘海图标按钮（明暗 / 更多）', prio: 1, now: '透明，悬停内凹',
+      states: { default: 'flat', hover: 'inset-sm' } },
+
+    { id: 'notch-panel', group: 'h', name: '刘海展开面板', prio: 1, now: '凸起大',
+      states: { default: 'raised-lg' } },
+
+    { id: 'notch-stat', group: 'h', name: '面板内统计槽', prio: 1, now: '内凹弱',
+      states: { default: 'inset-sm' } },
+
+    { id: 'segment', group: 'h', name: '分段控件（浅色 / 跟随 / 深色）', prio: 0, now: '容器内凹、选中项凸起小',
+      states: { default: 'inset-sm', active: 'raised-sm' } }
+  ];
+
+  var STATE_LABEL = { default: '默认', hover: '悬停', active: '选中' };
+
+  /* 元素到真实界面的截图对照：文件名对应 docs/proto/ 下的裁图，裁自隔离实例的真实界面 */
+  var SHOTS = {
+    'new-session': 'new-session.png',
+    'nav-row': 'nav-row.png',
+    'project-row': 'project-row.png',
+    'session-row': 'session-row.png',
+    search: 'search.png',
+    'account-card': 'account.png',
+    header: 'header.png',
+    tabstrip: 'tabs.png',
+    tab: 'tabs.png',
+    'header-actions': 'header-actions.png',
+    bubble: 'bubble.png',
+    'msg-actions': 'msg-actions-new.png',
+    composer: 'composer.png',
+    'composer-buttons': 'composer-buttons.png',
+    send: 'send.png',
+    menu: 'menu.png',
+    'menu-item': 'menu-item.png',
+    notch: 'notch.png',
+    'notch-panel': 'notch-panel.png',
+    'notch-stat': 'notch-stat.png',
+    segment: 'segment.png'
+  };
+
+  /* 元素到真实 DOM 类名的对照表：写在主题 CSS 里的选择器，方便把每一项对上界面位置 */
+  var SELECTORS = {
+    canvas: '.mP3x-q_frame / _sidebarCol / _centerCol',
+    scrollbar: '::-webkit-scrollbar-thumb',
+    'focus-ring': ':focus-visible',
+    'new-session': 'wtg9ga_newSession',
+    'nav-row': 'wtg9ga_panelRow',
+    'session-row': 'wnFoaW_sessionRow',
+    'project-row': 'wnFoaW_projectRow',
+    search: 'input[type="search"]',
+    'section-label': 'GAkraW_sectionLabel',
+    'sidebar-gap': 'wtg9ga_scrollArea',
+    header: 'an3WzG_header',
+    tabstrip: 'an3WzG_viewTabs',
+    tab: 'an3WzG_tab / an3WzG_tabActive',
+    'header-actions': 'an3WzG_headerActions button',
+    crumb: 'an3WzG_crumb',
+    bubble: 'LOmM4q_bubble',
+    code: 'pre',
+    'inline-code': 'code',
+    table: '.md-table-wide > table',
+    composer: '[data-composer-card]',
+    'composer-buttons': '[data-composer-card] button',
+    'right-tabs': '_tabHost',
+    'task-panel': 'DXuOLW_root',
+    'task-item': 'DXuOLW_item',
+    'entry-card': '[class*="_entry"]',
+    menu: '[role="menu"]',
+    'menu-item': '[role="menuitem"]',
+    dialog: '[role="dialog"]',
+    tooltip: '[role="tooltip"]',
+    notch: '#nt-notch',
+    'notch-icon': '.nt-btn',
+    'notch-panel': '.nt-panel',
+    'notch-stat': '.nt-stat',
+    segment: '.nt-seg'
+  };
+
+  /* 运行状态：checked 记录是否纳入配置，values 记录每个状态选的样式 */
+  var saved = readStore();
+  var checked = saved.checked || {};
+  var values = saved.values || {};
+  var onlyP0 = false;
+
+  var list = document.getElementById('pr-list');
+  var toc = document.getElementById('pr-toc');
+  var jsonOut = document.getElementById('pr-json');
+  var countOut = document.getElementById('pr-count');
+  var toast = document.getElementById('pr-toast');
+  var toastTimer = 0;
+
+  function readStore() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    } catch (err) {
+      return {};
+    }
+  }
+
+  function writeStore() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ checked: checked, values: values }));
+    } catch (err) {
+      /* 隐私模式下写不进去也不影响当前页面使用 */
+    }
+  }
+
+  function defaultValues(item) {
+    var out = {};
+    (Object.keys(item.states || {})).forEach(function (key) {
+      out[key] = item.states[key];
+    });
+    return out;
+  }
+
+  function itemValues(item) {
+    if (!values[item.id]) values[item.id] = defaultValues(item);
+    /* 兼容：新增状态时补上默认值 */
+    (Object.keys(item.states || {})).forEach(function (key) {
+      if (values[item.id][key] === undefined) values[item.id][key] = item.states[key];
+    });
+    return values[item.id];
+  }
+
+  function isChecked(item) {
+    if (item.configurable === false) return false;
+    if (checked[item.id] === undefined) return item.prio === 0;
+    return checked[item.id];
+  }
+
+  function buildToc() {
+    GROUPS.forEach(function (group) {
+      var link = document.createElement('a');
+      link.href = '#group-' + group[0];
+      link.textContent = group[1];
+      toc.appendChild(link);
+    });
+  }
+
+  function buildList() {
+    list.innerHTML = '';
+    GROUPS.forEach(function (group) {
+      var groupItems = ITEMS.filter(function (item) { return item.group === group[0]; });
+      if (!groupItems.length) return;
+      if (onlyP0 && !groupItems.some(function (item) { return item.prio === 0; })) return;
+
+      var section = document.createElement('section');
+      section.className = 'pr-group';
+      section.id = 'group-' + group[0];
+
+      var head = document.createElement('div');
+      head.className = 'pr-group-head';
+      head.innerHTML = '<h2>' + escapeHtml(group[1]) + '</h2><span>' + escapeHtml(group[2]) + '</span>';
+      section.appendChild(head);
+
+      groupItems.forEach(function (item) {
+        if (onlyP0 && item.prio !== 0) return;
+        section.appendChild(buildItem(item));
+      });
+
+      list.appendChild(section);
+    });
+    refreshJson();
+  }
+
+  function buildItem(item) {
+    var row = document.createElement('article');
+    row.className = 'pr-item';
+    var on = isChecked(item);
+    row.setAttribute('data-off', on ? '0' : '1');
+
+    /* 第一列：元素名、优先级、说明与现状 */
+    var info = document.createElement('div');
+    var name = document.createElement('div');
+    name.className = 'pr-name';
+    var badge = item.prio ? '<span class="pr-tag' + (item.prio === 0 ? ' pr-tag-p0' : '') + '">P' + item.prio + '</span>' : '';
+    var fixed = item.configurable === false ? '<span class="pr-tag">不配置</span>' : '';
+    name.innerHTML = '<b>' + escapeHtml(item.name) + '</b>' + badge + fixed;
+    info.appendChild(name);
+
+    var note = document.createElement('p');
+    note.className = 'pr-note';
+    var noteText = item.note || ('现在：' + (item.now || ''));
+    note.innerHTML = escapeHtml(noteText);
+    info.appendChild(note);
+
+    var selText = item.sel || SELECTORS[item.id];
+    if (selText) {
+      var sel = document.createElement('code');
+      sel.className = 'pr-sel';
+      sel.textContent = selText;
+      info.appendChild(sel);
+    }
+
+    /* 真实界面截图：解决“这到底是哪个按钮”的问题，比读类名直观；点开可以看原图 */
+    var shot = SHOTS[item.id];
+    if (!shot && item.configurable !== false) {
+      var none = document.createElement('span');
+      none.className = 'pr-shot-none';
+      none.textContent = '（这一项没有实拍图）';
+      info.appendChild(none);
+    }
+
+    row.appendChild(info);
+
+    /* 第二列：三种状态的实物预览，第一行通栏放界面实拍 */
+    var samples = document.createElement('div');
+    samples.className = 'pr-samples';
+    var valuesForItem = itemValues(item);
+    var stateKeys = Object.keys(item.states || {});
+    if (!stateKeys.length) stateKeys = ['default'];
+    /* 只有一两态的元素不要让预览格空出大片白，按实际状态数均分，单格最宽 190px */
+    samples.style.gridTemplateColumns = 'repeat(' + stateKeys.length + ', minmax(0, 190px))';
+    samples.style.justifyContent = 'start';
+
+    if (shot) {
+      var shotRow = document.createElement('a');
+      shotRow.className = 'pr-shot-row';
+      shotRow.href = 'docs/proto/' + shot;
+      shotRow.target = '_blank';
+      shotRow.rel = 'noreferrer';
+      shotRow.title = '点开看原尺寸';
+      var img = document.createElement('img');
+      img.className = 'pr-shot';
+      img.src = 'docs/proto/' + shot;
+      img.alt = item.name;
+      img.loading = 'lazy';
+      shotRow.appendChild(img);
+      var shotTag = document.createElement('span');
+      shotTag.className = 'pr-shot-tag';
+      shotTag.textContent = '界面实拍';
+      shotRow.appendChild(shotTag);
+      img.addEventListener('error', function () {
+        shotRow.replaceWith(Object.assign(document.createElement('span'), {
+          className: 'pr-shot-none',
+          textContent: '（截图缺失）'
+        }));
+      });
+      samples.appendChild(shotRow);
+    }
+
+    /* 每一个状态对应哪一个预览块，记下来再改，别按键位去推——上面的实拍图会让 children 错位 */
+    var demoByState = {};
+    var styleLabelByState = {};
+    stateKeys.forEach(function (key) {
+      var cell = document.createElement('div');
+      cell.className = 'pr-sample';
+      var demo = document.createElement('div');
+      demo.className = 'pr-demo' + (key === 'active' ? ' pr-demo-pill' : '');
+      demo.setAttribute('data-style', styleOf(item, key, valuesForItem[key]));
+      demo.textContent = shortLabel(item.name);
+      cell.appendChild(demo);
+      var label = document.createElement('i');
+      label.textContent = STATE_LABEL[key] || key;
+      cell.appendChild(label);
+      var styleTag = document.createElement('em');
+      styleTag.textContent = styleLabel(valuesForItem[key]);
+      cell.appendChild(styleTag);
+      samples.appendChild(cell);
+      demoByState[key] = demo;
+      styleLabelByState[key] = styleTag;
+    });
+    row.appendChild(samples);
+
+    /* 第三列：勾选与三态下拉 */
+    var controls = document.createElement('div');
+    controls.className = 'pr-controls';
+
+    var check = document.createElement('label');
+    check.className = 'pr-check';
+    var box = document.createElement('input');
+    box.type = 'checkbox';
+    box.checked = on;
+    box.disabled = item.configurable === false;
+    box.addEventListener('change', function () {
+      checked[item.id] = box.checked;
+      row.setAttribute('data-off', box.checked ? '0' : '1');
+      writeStore();
+      refreshJson();
+    });
+    check.appendChild(box);
+    check.appendChild(document.createTextNode(item.configurable === false ? '固定，不参与配置' : '纳入配置'));
+    controls.appendChild(check);
+
+    if (item.configurable !== false) {
+      var grid = document.createElement('div');
+      grid.className = 'pr-selects';
+      stateKeys.forEach(function (key) {
+        var wrap = document.createElement('label');
+        wrap.appendChild(document.createTextNode(STATE_LABEL[key] || key));
+        var select = document.createElement('select');
+        STYLE_OPTIONS.forEach(function (option) {
+          var node = document.createElement('option');
+          node.value = option[0];
+          node.textContent = option[1];
+          if ((valuesForItem[key] || '') === option[0]) node.selected = true;
+          select.appendChild(node);
+        });
+        select.disabled = !box.checked;
+        select.addEventListener('change', function () {
+          itemValues(item)[key] = select.value;
+          var face = demoByState[key];
+          if (face) face.setAttribute('data-style', styleOf(item, key, select.value));
+          var tag = styleLabelByState[key];
+          if (tag) tag.textContent = styleLabel(select.value);
+          writeStore();
+          refreshJson();
+        });
+        box.addEventListener('change', function () {
+          select.disabled = !box.checked;
+        });
+        wrap.appendChild(select);
+        grid.appendChild(wrap);
+      });
+      controls.appendChild(grid);
+    }
+
+    row.appendChild(controls);
+    return row;
+  }
+
+  /* 选“不单独配”时，预览要显示这一项现在的真实默认样式，而不是一片平面，
+     否则会让人以为这个开关没生效。所以空值回退到该项自己的默认值。 */
+  function styleOf(item, key, value) {
+    if (value) return value;
+    if (item.states && item.states[key]) return item.states[key];
+    return 'flat';
+  }
+
+  /* 把样式的内部取值翻成人看的名字，显示在预览块下面 */
+  function styleLabel(value) {
+    if (!value) return '跟随默认';
+    for (var i = 0; i < STYLE_OPTIONS.length; i += 1) {
+      if (STYLE_OPTIONS[i][0] === value) return STYLE_OPTIONS[i][1];
+    }
+    return value;
+  }
+
+  function STATE_ORDER_INDEX(keys, key) {
+    for (var i = 0; i < keys.length; i += 1) {
+      if (keys[i] === key) return i;
+    }
+    return -1;
+  }
+
+  function refreshJson() {
+    var payload = { picked: {}, states: {} };
+    var count = 0;
+    ITEMS.forEach(function (item) {
+      if (!isChecked(item)) return;
+      var states = {};
+      var valuesForItem = itemValues(item);
+      (Object.keys(item.states || {})).forEach(function (key) {
+        if (valuesForItem[key]) states[key] = valuesForItem[key];
+      });
+      payload.picked[item.id] = item.name;
+      payload.states[item.id] = states;
+      count += 1;
+    });
+    jsonOut.value = JSON.stringify(payload, null, 2);
+    countOut.textContent = '已勾选 ' + count + ' 项（共 ' + ITEMS.filter(function (i) { return i.configurable !== false; }).length + ' 项可选）';
+  }
+
+  /* 预览格里写的短标签：去掉括号里的补充说明和分隔符，最多 7 个字，避免文字被截断成半个词 */
+  function shortLabel(text) {
+    var clean = String(text).replace(/（[^）]*）/g, '').replace(/[\/·、]/g, ' ').replace(/\s+/g, ' ').trim();
+    return clean.length > 7 ? clean.slice(0, 7) : clean;
+  }
+
+  function escapeHtml(text) {    return String(text).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function showToast(text) {
+    toast.textContent = text;
+    toast.setAttribute('data-show', '1');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.setAttribute('data-show', '0');
+    }, 1600);
+  }
+
+  /* 深色切换：主题的暗色令牌挂在 body[data-ds-dark-theme] 上，这里直接切属性即可 */
+  document.getElementById('pr-mode').addEventListener('click', function (event) {
+    var dark = document.body.hasAttribute('data-ds-dark-theme');
+    if (dark) {
+      document.body.removeAttribute('data-ds-dark-theme');
+    } else {
+      document.body.setAttribute('data-ds-dark-theme', '');
+    }
+    event.currentTarget.textContent = dark ? '切到深色' : '切到浅色';
+  });
+
+  document.getElementById('pr-p0').addEventListener('click', function (event) {
+    onlyP0 = !onlyP0;
+    event.currentTarget.setAttribute('aria-pressed', onlyP0 ? 'true' : 'false');
+    buildList();
+  });
+
+  document.getElementById('pr-reset').addEventListener('click', function () {
+    checked = {};
+    values = {};
+    writeStore();
+    buildList();
+    showToast('已恢复默认');
+  });
+
+  /* 底部配置条默认收起来，只留一行；要看 JSON 再点开，避免一直占着屏幕下方 */
+  document.getElementById('pr-toggle').addEventListener('click', function (event) {
+    var box = document.getElementById('pr-out');
+    var open = box.getAttribute('data-open') === '1';
+    box.setAttribute('data-open', open ? '0' : '1');
+    event.currentTarget.setAttribute('aria-expanded', open ? 'false' : 'true');
+    event.currentTarget.textContent = open ? '展开 JSON' : '收起 JSON';
+  });
+
+  document.getElementById('pr-copy').addEventListener('click', function () {    var text = jsonOut.value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('已复制到剪贴板');
+      }, function () {
+        selectAll();
+      });
+    } else {
+      selectAll();
+    }
+  });
+
+  function selectAll() {
+    jsonOut.focus();
+    jsonOut.select();
+    showToast('已选中文本，按 Ctrl+C 复制');
+  }
+
+  buildToc();
+  buildList();
+})();
+</script>
+</body>
+</html>
