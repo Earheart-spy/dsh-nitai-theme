@@ -1,5 +1,5 @@
 /*
- * 拟态主题样式：亮色令牌写在 body，暗色令牌写在 body[data-ds-dark-theme]，
+ * 新拟态主题样式：亮色令牌写在 body，暗色令牌写在 body[data-ds-dark-theme]，
  * 组件覆盖放在文件后半段。大量使用 !important 是因为布局插件会把令牌写成
  * body 的行内样式，普通规则压不过行内样式。
  */
@@ -403,7 +403,7 @@ body[data-ds-dark-theme] ::selection {
 
 /*
  * 三列统一成一张画布之后，原生布局仍然用 overflow:hidden 裁掉溢出内容。
- * 拟态元素的外阴影大约向外延伸 17px，元素贴着列边界时阴影会被这条裁剪线切断，
+ * 新拟态元素的外阴影大约向外延伸 17px，元素贴着列边界时阴影会被这条裁剪线切断，
  * 在交界处留下一条笔直的竖边，整张画布看起来又被切成了几块。
  * 这里把列改成 overflow:clip，并允许裁剪边界向外扩 24px，让阴影越过交界自然淡出；
  * 对话外壳本身改成透明，否则它那层和画布同色的底色会盖住相邻列溢出的阴影。
@@ -518,7 +518,7 @@ body[data-ds-dark-theme] [class*="_card"]:not([class*="cardHeader"]):not([class*
   border: 1px solid var(--nt-hairline) !important;
 }
 
-/* 侧栏会话/工作区的悬浮卡片：原生固定是深色浮层，这里改成跟随明暗模式的拟态卡片。 */
+/* 侧栏会话/工作区的悬浮卡片：原生固定是深色浮层，这里改成跟随明暗模式的新拟态卡片。 */
 [class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) {
   width: 260px !important;
   padding: 14px 18px !important;

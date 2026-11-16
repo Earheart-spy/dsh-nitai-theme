@@ -10,7 +10,7 @@ let css = fs.readFileSync(file, 'utf8')
 css = css.replace(/\/\*[\s\S]*?\*\//g, '')
 
 const header = `/*
- * 拟态主题样式：亮色令牌写在 body，暗色令牌写在 body[data-ds-dark-theme]，
+ * 新拟态主题样式：亮色令牌写在 body，暗色令牌写在 body[data-ds-dark-theme]，
  * 组件覆盖放在文件后半段。大量使用 !important 是因为布局插件会把令牌写成
  * body 的行内样式，普通规则压不过行内样式。
  */
