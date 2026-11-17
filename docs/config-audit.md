@@ -164,4 +164,6 @@ body:not(#nt-config-noop) [class*="iFrn8G_root"] { border-radius: 12px !importan
 - **空配置 = 调好的效果**：清空 `config.json` 后，逐项读计算样式——`new-session` 是 `5px 5px 12px`（凸起·小）、`nav-row`/`composer`/`notch` 是 `2px 2px 4px inset`（内凹·浅）、`send-button` 是 `9px 9px 21px`（凸起·中），与作者调好的取值一致。
 - **等价性对照**：先测空配置下的计算值，再 POST 一份这 19 项的显式配置、刷新样式表后重测，7 个抽样元素（新会话、导航行、账户卡、输入卡、发送按钮、刘海、统计槽）前后 `box-shadow` 字符串完全相同。
 - **面板初始态**：33 行、59 个下拉全部为空（跟随主题默认）、33 个勾选框全未勾选。
+- **默认档位标注**：`lib/surfaces.js` 的 `THEME_DEFAULTS` 记下每个状态实际用的档位（19 个元素、34 个状态），宿主通过 `/dsh-nitai-theme/surfaces.json` 的 `defaults` 字段下发给面板，面板把「跟随主题默认」显示成「跟随主题默认（内凹 · 浅）」这样的文字。实测：`nav-row` 三个状态下拉的首项分别是「跟随主题默认（内凹 · 浅）」「（凸起 · 小）」「（凸起 · 中）」，没有单独写样式的项（例如 `hover-card`、`dialog`）只显示「跟随主题默认」。
+- **两处不会走偏**：`tools/check-theme.mjs` 会逐条核对 `THEME_DEFAULTS` 里的档位在 `theme.css` 里确实写着对应的 `box-shadow` 变量，当前 34 处全部对得上；两处一旦不一致，自检直接失败。
 - **一键恢复**：把 `notch` 常态改成「凸起·大」保存（计算值变成 `18px 18px`），再点「恢复默认配置」，接口 `DELETE /dsh-nitai-theme/config.json` 返回 `ok: true`，下拉回到空值、计算值回到 `2px 2px inset`。
