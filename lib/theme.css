@@ -1404,8 +1404,13 @@ body[data-ds-dark-theme] .nt-daynum {
   color: var(--dsw-alias-label-tertiary);
 }
 
-.nt-sheet-close {
+.nt-sheet-reset {
   margin-left: auto;
+  flex: none;
+}
+
+.nt-sheet-close {
+  margin-left: 8px;
   flex: none;
   transform: rotate(180deg);
 }
