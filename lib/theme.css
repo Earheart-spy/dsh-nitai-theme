@@ -629,20 +629,45 @@ pre {
 }
 
 
+/*
+ * 表格。
+ * DSH 自己的写法是“无边框表格”：首列左内边距、末列右内边距都被清零，让表格文字与正文左缘对齐。
+ * 主题把整张表画成带圆角和投影的卡片之后，这个清零就露馅了——首列文字顶在圆角上，
+ * 阴影卡片看着像被裁掉一块。这里把两侧留白补回来，并给表格铺一层比画布略亮的底色，
+ * 让它读起来是一张“浮起来的纸”，而不是一圈空阴影。
+ */
 table {
   border-collapse: separate !important;
   border-spacing: 0 !important;
   border-radius: 14px !important;
   overflow: hidden;
+  background-color: var(--dsw-alias-bg-layer-2) !important;
   box-shadow: var(--nt-raised-sm) !important;
+}
+
+table th:first-child,
+table td:first-child {
+  padding-left: 16px !important;
+}
+
+table th:last-child,
+table td:last-child {
+  padding-right: 16px !important;
 }
 
 thead th {
   background-color: var(--dsw-alias-bg-layer-3) !important;
 }
 
-tbody td {
-  border-top: 1px solid var(--dsw-alias-border-l3) !important;
+/*
+ * 行之间的分隔线只留一条。
+ * DSH 自己在 th / td 上画了 `border-bottom: .5px`，主题早先又给 td 补了一条 `border-top: 1px`，
+ * 两条叠在一起，行与行之间实际是 1.5px 的双线，放大看中间还有一道缝。
+ */
+table th,
+table td {
+  border-top: 0 !important;
+  border-bottom-color: var(--dsw-alias-border-l3) !important;
 }
 
 /*
