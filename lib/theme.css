@@ -515,7 +515,13 @@ body[data-ds-dark-theme] [data-composer-card] {
 }
 
 
-[class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+/*
+ * 聊天气泡。
+ * 同样避免用 [class*="bubble"] 这种包含匹配：卡片里的 bubbleMeta、bubbleTime 之类
+ * 也会被当成气泡涂上阴影。这里只认气泡本体——类名以 `_bubble` 结尾、
+ * 带构建哈希的 `_bubble_xxx`，以及旧版的 LOmM4q_bubble。
+ */
+:where([class$="_bubble"], [class*="_bubble_"], [class~="LOmM4q_bubble"]) {
   border-radius: 18px 18px 6px 18px !important;
   border: 1px solid var(--nt-hairline) !important;
   box-shadow:
@@ -523,20 +529,28 @@ body[data-ds-dark-theme] [data-composer-card] {
     inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
 }
 
-body[data-ds-dark-theme] [class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+body[data-ds-dark-theme] :where([class$="_bubble"], [class*="_bubble_"], [class~="LOmM4q_bubble"]) {
   box-shadow:
     var(--nt-raised-sm),
     inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
 }
 
 
-[class*="_card"]:not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+/*
+ * 卡片容器。
+ * 这里不用 [class*="_card"]：那种「包含」匹配会把卡片内部的小元素一起选中——
+ * 例如内置插件页的 code.qgYWUG_cardIdentity（类名里含 _card）会被当成整张卡片，
+ * 涂上卡片的底色、圆角和阴影，看起来就是一个厚厚的小药丸。
+ * 只认两种写法：类名属性以 `_card` 结尾（qgYWUG_card、EEnIVa_card），
+ * 或带构建哈希的 `_card_xxx`（_card_1pq26_1）。
+ */
+:where([class$="_card"], [class*="_card_"]):not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
   border-radius: 20px !important;
   border: 1px solid var(--nt-hairline) !important;
   box-shadow: var(--nt-raised-sm) !important;
 }
 
-body[data-ds-dark-theme] [class*="_card"]:not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
+body[data-ds-dark-theme] :where([class$="_card"], [class*="_card_"]):not([data-composer-card]):not([class*="cardHeader"]):not([class*="cardTitle"]):not([class*="cardBody"]):not([class*="cardFooter"]):not([class*="cardAction"]):not([class*="cardContent"]):not(:has(> [class~="wnFoaW_hoverContent"])) {
   border: 1px solid var(--nt-hairline) !important;
 }
 
@@ -1763,13 +1777,14 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 
-[class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+/* 用户气泡的加强版阴影（同样只认气泡本体，写法见前面的气泡小节）。 */
+:where([class$="_bubble"], [class*="_bubble_"], [class~="LOmM4q_bubble"]) {
   box-shadow:
     var(--nt-raised),
     inset 0 1px 0 var(--nt-shadow-light) !important;
 }
 
-body[data-ds-dark-theme] [class*="bubble"]:not([class*="bubbleContent"]):not([class*="bubbleAction"]):not([class*="bubbleHighlight"]) {
+body[data-ds-dark-theme] :where([class$="_bubble"], [class*="_bubble_"], [class~="LOmM4q_bubble"]) {
   box-shadow:
     -6px -6px 14px rgba(255, 255, 255, 0.045),
     8px 8px 18px rgba(0, 0, 0, 0.5),
