@@ -595,8 +595,13 @@ body[data-ds-dark-theme] [class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) 
 }
 
 
-[role="menu"],
-[role="listbox"],
+/*
+ * 输入框左下角「+」弹出的指令菜单（文件 / 目标 / 计划 / 反馈 ……）走的是 listbox 角色，
+ * 但它是一张密集的命令清单，套上新拟态的面板阴影和逐行圆角后显得很吵。
+ * 这一类（面板类名以 pc3rQa_ 开头）保持 DSH 原生外观，只显示文字。
+ */
+[role="menu"]:not([class*="pc3rQa_"]),
+[role="listbox"]:not([class*="pc3rQa_"]),
 [role="dialog"],
 [class*="_menu_"],
 [class*="_popover_"] {
@@ -611,8 +616,8 @@ body[data-ds-dark-theme] [class*="_card"]:has(> [class~="wnFoaW_hoverContent"]) 
   box-shadow: var(--nt-raised-lg) !important;
 }
 
-[role="menu"] [role="menuitem"],
-[role="listbox"] [role="option"] {
+[role="menu"]:not([class*="pc3rQa_"]) [role="menuitem"],
+[role="listbox"]:not([class*="pc3rQa_"]) [role="option"] {
   border-radius: 12px !important;
 }
 
