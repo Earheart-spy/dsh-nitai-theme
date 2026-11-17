@@ -155,13 +155,13 @@ body:not(#nt-config-noop) [class*="iFrn8G_root"] { border-radius: 12px !importan
 
 另外这一轮顺手修掉的两处：右栏「Git / 本轮文件」两个按钮在这一版 DSH 里根本没有任何样式（露的是浏览器原生按钮外观），主题改成纯文字标签并撤掉了单独的配置项；模型菜单顶部的搜索框被主题的通用输入框规则画上了底色、描边和焦点环，改成保持原生透明外观。
 
-## 八、默认配置与一键恢复（2026-11-17 补）
+## 八、默认外观与一键恢复（2026-11-17 补）
 
-- 默认值写在 `lib/surfaces.js` 的 `DEFAULT_STATES`，包成 `DEFAULT_CONFIG`；宿主 `readConfig()` 读不到配置文件时用它。
-- 验证方式：把隔离实例的 `config.json` 删掉，重新请求 `/dsh-nitai-theme/surfaces.json` 与 `/theme.css`。
-  - `surfaces.json` 返回 33 项，`nav-row` 为 `inset-sm / raised-sm / raised-md`、`composer` 为 `inset-sm / inset-md`，与预期一致。
-  - `theme.css` 末尾自动出现对应的覆盖规则，说明“没有配置文件”也会照默认值生效。
-- 一键恢复验证：先把 `nav-row` 常态改成 `raised-lg` 并 POST 保存（`theme.css` 随即出现对应规则），再点面板顶部「恢复默认配置」，宿主执行 `DELETE /dsh-nitai-theme/config.json`：
-  - 接口返回 `ok: true`，配置回到 33 项默认值；
-  - 面板下拉回到 `inset-sm / raised-sm / raised-md`，提示“已恢复主题默认配置，界面马上更新”；
-  - 隔离目录里的 `config.json` 已被删除。
+默认外观不是一份预填的配置，而是直接固化在 `lib/theme.css` 末尾的「元素默认凹凸（主题自带外观）」一段里（38 条规则，选择器统一带 `body:not(#nt-config-noop)` 前缀以压过前面的通配规则）。`lib/surfaces.js` 里的 `DEFAULT_CONFIG` 是空的，所以配置面板默认每一项都是「跟随主题默认」、勾选框全空。
+
+验证方式与结果：
+
+- **空配置 = 调好的效果**：清空 `config.json` 后，逐项读计算样式——`new-session` 是 `5px 5px 12px`（凸起·小）、`nav-row`/`composer`/`notch` 是 `2px 2px 4px inset`（内凹·浅）、`send-button` 是 `9px 9px 21px`（凸起·中），与作者调好的取值一致。
+- **等价性对照**：先测空配置下的计算值，再 POST 一份这 19 项的显式配置、刷新样式表后重测，7 个抽样元素（新会话、导航行、账户卡、输入卡、发送按钮、刘海、统计槽）前后 `box-shadow` 字符串完全相同。
+- **面板初始态**：33 行、59 个下拉全部为空（跟随主题默认）、33 个勾选框全未勾选。
+- **一键恢复**：把 `notch` 常态改成「凸起·大」保存（计算值变成 `18px 18px`），再点「恢复默认配置」，接口 `DELETE /dsh-nitai-theme/config.json` 返回 `ok: true`，下拉回到空值、计算值回到 `2px 2px inset`。

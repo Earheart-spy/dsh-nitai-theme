@@ -1980,3 +1980,52 @@ body.nt-has-costbar .dshcn-notch {
 }
 
 
+/*
+ * 元素默认凹凸（主题自带外观）。
+ *
+ * 这一段是“默认配置”的效果：清单里那些元素在本主题下应该长什么样，全部固化在这里，
+ * 所以配置文件为空时（新装、点过「恢复默认配置」、或从来没进过设置面板）界面就是这套观感，
+ * 而配置面板里所有项都显示「跟随主题默认」。
+ *
+ * 选择器用 body:not(#nt-config-noop) 开头，是为了拿到“一个 id”的权重，压过上面那些
+ * 通配规则（例如卡片那条 :not(...) 叠了六个类）；配置面板生成的覆盖规则用的是同一个前缀，
+ * 但追加在本文件之后，所以用户改哪一项就覆盖哪一项，其余项仍然由这里决定。
+ */
+body:not(#nt-config-noop) [class~="wtg9ga_newSession"] { box-shadow: var(--nt-raised-sm) !important; }
+body:not(#nt-config-noop) [class~="wtg9ga_newSession"]:hover { box-shadow: var(--nt-raised) !important; }
+body:not(#nt-config-noop) [class~="wtg9ga_panelRow"] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class~="wtg9ga_panelRow"]:hover { box-shadow: var(--nt-raised-sm) !important; }
+body:not(#nt-config-noop) [class~="wtg9ga_panelRow"][aria-current="page"] { box-shadow: var(--nt-raised) !important; }
+body:not(#nt-config-noop) [class~="GAkraW_iconButton"], body:not(#nt-config-noop) [class~="GAkraW_searchButton"] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class~="GAkraW_iconButton"]:hover, body:not(#nt-config-noop) [class~="GAkraW_searchButton"]:hover { box-shadow: var(--nt-raised-sm) !important; }
+body:not(#nt-config-noop) [class~="GAkraW_iconButton"]:active, body:not(#nt-config-noop) [class~="GAkraW_searchButton"]:active { box-shadow: var(--nt-raised) !important; }
+body:not(#nt-config-noop) [class~="wnFoaW_sessionRow"]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) [class~="wnFoaW_sessionRow"][aria-selected="true"] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [aria-haspopup="menu"][data-collapsed] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [aria-haspopup="menu"][data-collapsed]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) [class~="an3WzG_tab"]:hover { box-shadow: var(--nt-raised-sm) !important; }
+body:not(#nt-config-noop) [class~="an3WzG_tabActive"] { box-shadow: var(--nt-raised) !important; }
+body:not(#nt-config-noop) [class~="an3WzG_headerActions"] button, body:not(#nt-config-noop) [class~="an3WzG_headerUtilities"] button { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class~="an3WzG_headerActions"] button:hover, body:not(#nt-config-noop) [class~="an3WzG_headerUtilities"] button:hover { box-shadow: var(--nt-raised-sm) !important; }
+body:not(#nt-config-noop) [class*="_bubble_"], body:not(#nt-config-noop) [class*="LOmM4q_bubble"] { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) :not(pre) > code { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) :not(pre) > code { border-radius: 6px !important; }
+body:not(#nt-config-noop) .md-table-wide > table, body:not(#nt-config-noop) [class*="_markdown"] table { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class*="pDft-q_callRow"]:hover, body:not(#nt-config-noop) [class*="VJlF5q_root"]:hover, body:not(#nt-config-noop) [class*="iFrn8G_root"]:hover { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class*="pDft-q_callRow"]:hover, body:not(#nt-config-noop) [class*="VJlF5q_root"]:hover, body:not(#nt-config-noop) [class*="iFrn8G_root"]:hover { border-radius: 12px !important; }
+body:not(#nt-config-noop) [data-composer-card] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [data-composer-card]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) [data-composer-card] button:not([class*="_primary"]):hover { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [data-composer-card] button[class*="_primary"], body:not(#nt-config-noop) [data-composer-card] button[type="submit"] { box-shadow: var(--nt-raised) !important; }
+body:not(#nt-config-noop) [data-composer-card] button[class*="_primary"]:hover, body:not(#nt-config-noop) [data-composer-card] button[type="submit"]:hover { box-shadow: var(--nt-raised-lg) !important; }
+body:not(#nt-config-noop) [class*="_tabHost_"] [role="tab"] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class*="_tabHost_"] [role="tab"] { border-radius: 8px !important; }
+body:not(#nt-config-noop) [class*="_tabHost_"] [role="tab"]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) [class*="_tabHost_"] [role="tab"]:hover { border-radius: 8px !important; }
+body:not(#nt-config-noop) [class~="p2k40q_entry"], body:not(#nt-config-noop) [class~="-4GESq_entry"] { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) [class~="p2k40q_entry"], body:not(#nt-config-noop) [class~="-4GESq_entry"] { border-radius: 12px !important; }
+body:not(#nt-config-noop) [class~="p2k40q_entry"]:hover, body:not(#nt-config-noop) [class~="-4GESq_entry"]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) [class~="p2k40q_entry"]:hover, body:not(#nt-config-noop) [class~="-4GESq_entry"]:hover { border-radius: 12px !important; }
+body:not(#nt-config-noop) [role="menuitem"]:hover { box-shadow: var(--nt-inset) !important; }
+body:not(#nt-config-noop) #nt-notch { box-shadow: var(--nt-inset-soft) !important; }
+body:not(#nt-config-noop) #nt-notch:hover { box-shadow: var(--nt-inset) !important; }
