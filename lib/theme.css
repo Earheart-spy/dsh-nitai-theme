@@ -1658,19 +1658,45 @@ body[data-ds-dark-theme] .nt-daynum {
 }
 
 [class~="an3WzG_viewTabs"] {
-  gap: 28px !important;
-  align-items: flex-end;
-  border-radius: 0;
-  padding: 0;
+  gap: 6px !important;
+  align-items: center !important;
+  /*
+   * 标签条要做成「凹槽」时，凹槽必须把里面的胶囊整个包住。
+   * DSH 原生给这个容器只留了 25px 高、没有内边距，而胶囊自己带上下内边距，
+   * 于是凹槽比胶囊矮一截，看起来就是“字很大、容器很小”。这里补 2px 内边距并让子项垂直居中。
+   */
+  padding: 2px !important;
+  min-height: 0 !important;
+  border-radius: 12px !important;
   background: transparent !important;
   box-shadow: none !important;
 }
 
+/*
+ * 三种状态（未选中 / 悬停 / 选中）必须是同一个盒子：
+ * DSH 原本把 9px 的下内边距留给下划线，选中态又额外加 4px 上内边距和 11px 左右内边距，
+ * 一换状态盒子就变形，阴影的相对位置也跟着跳。这里统一成 5px 12px，谁都不许再改内边距。
+ */
 [class~="an3WzG_tab"] {
-  border-radius: 10px !important;
-  padding: 0 0 9px !important;
+  border-radius: 9px !important;
+  padding: 5px 12px !important;
+  /*
+   * DSH 自己给标签加了负外边距（margin: -10px -10px 0），本意是扩大点击热区，
+   * 但那会让胶囊的盒子比看上去小一圈：凹槽按盒子高度算就比胶囊矮，相邻胶囊还会互相压住。
+   * 既然我们把标签做成了有实体边界的胶囊，就把这个负外边距去掉，用 padding 提供点击面积。
+   */
+  margin: 0 !important;
+  min-height: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+  transition:
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* 悬停只换底色、不加投影：相邻标签只隔 6px，两颗凸起的阴影会撞在一起变成一条暗带。 */
+[class~="an3WzG_tab"]:hover {
+  background: var(--dsw-alias-bg-layer-3) !important;
 }
 
 [class~="an3WzG_tab"]::after {
@@ -1680,13 +1706,8 @@ body[data-ds-dark-theme] .nt-daynum {
 
 [class~="an3WzG_tabActive"] {
   color: var(--dsw-alias-brand-primary) !important;
-  border-radius: 10px !important;
-  padding: 4px 11px 9px !important;
   background: var(--dsw-alias-bg-layer-2) !important;
   box-shadow: var(--nt-raised-sm) !important;
-  transition:
-    background-color 0.18s ease,
-    box-shadow 0.18s ease;
 }
 
 [class~="an3WzG_tabActive"]::after {

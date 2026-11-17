@@ -37,14 +37,25 @@
     return String(value || '').replace(/\s+/g, ' ').trim()
   }
 
-  function judge(shadow, style) {
+  function judge(shadow, style, custom) {
     var want = EXPECT[style]
     if (!want) return true
     var text = normalize(shadow)
     if (style === 'flat') return text === 'none'
+    /*
+     * 少数元素有专属阴影（会话头部贴在窗口顶边，普通凸起看不出效果）。
+     * 这类元素的期望值不能按公共档位去比，改成两步核对：
+     * 一是这一档确实被写进了样式表，二是元素上确实有阴影（不是 none）。
+     */
+    if (custom) {
+      return text !== 'none' && SHEET_TEXT.indexOf(custom) !== -1
+    }
     var hasInset = text.indexOf('inset') !== -1
     return hasInset === want.inset && text.indexOf(want.text) !== -1
   }
+
+  /* 当前注入的样式表文本，供专属阴影的核对使用。 */
+  var SHEET_TEXT = ''
 
   function post(cfg) {
     return fetch('/dsh-nitai-theme/config.json', {
@@ -63,6 +74,7 @@
   function apply(css) {
     var tag = document.getElementById('nitai-theme-css')
     if (tag) tag.textContent = css
+    SHEET_TEXT = css || ''
     /* 主题里给不少元素挂了 0.18s 的过渡，等它走完再读计算样式，否则读到中间值。 */
     return new Promise(function (resolve) { setTimeout(resolve, 260) })
   }
@@ -108,7 +120,8 @@
         try { el = document.querySelector(item.selector) } catch (e) { row.detail[style] = 'bad-selector'; continue }
         if (!el) { row.detail[style] = 'no-element'; continue }
         var shadow = getComputedStyle(el).boxShadow
-        row.detail[style] = judge(shadow, style) ? 'ok' : 'fail:' + normalize(shadow).slice(0, 52)
+        var custom = item.shadow && item.shadow[style] ? item.shadow[style] : ''
+        row.detail[style] = judge(shadow, style, custom) ? 'ok' : 'fail:' + normalize(shadow).slice(0, 52)
       }
     }
 
