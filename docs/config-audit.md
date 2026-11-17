@@ -97,6 +97,37 @@ await window.__ntAudit(['raised-lg', 'inset-lg'])   // 指定档位
 
 这和文件差异视图（`_0cITKW_` 那一套）的处理保持一致：那套也去掉了 `inset 3px 0 0` 色条，只留柔和的整行底色。
 
+### 「一部分圆角、一部分直角」（2026-11-17 补）
+
+用户给「正文 · 工具调用 / 思考块」这一项设了悬停效果后，发现有的地方是圆角、有的地方是直角。原因是这一项同时管三类元素，而它们的原生形状并不一样：
+
+| 元素 | 类名 | 原生圆角 |
+| --- | --- | --- |
+| 工具调用行 | `pDft-q_callRow` | 8px（DSH 自己写了 `border-radius: var(--dsw-radius-sm)`） |
+| 思考块 | `VJlF5q_root` | 无 |
+| 上下文注入块 | `iFrn8G_root` | 无 |
+
+阴影是沿元素盒子画的，后两类没有圆角，一加阴影就露出方角。处理办法是给清单项加一个 `radius` 字段，配置生效时把圆角一起写进去：
+
+```js
+{
+  id: 'tool-card',
+  selector: '[class*="pDft-q_callRow"], [class*="VJlF5q_root"], [class*="iFrn8G_root"]',
+  radius: '12px',
+  …
+}
+```
+
+生成的 CSS 因此在阴影那条规则之后多一条：
+
+```css
+body:not(#nt-config-noop) [class*="pDft-q_callRow"],
+body:not(#nt-config-noop) [class*="VJlF5q_root"],
+body:not(#nt-config-noop) [class*="iFrn8G_root"] { border-radius: 12px !important; }
+```
+
+同一轮里按同样标准核对了清单中的其他项，把原生没有圆角的都补上：`msg-actions`（消息悬停操作条）10px、`inline-code`（行内代码）6px、`diff-view`（差异视图）10px、`rightbar-tabs`（右栏标签）8px、`tool-entry`（右栏工具卡）12px。已经在主题里有圆角的（`pre` 14px、表格 14px、弹窗 24px、菜单 18px、菜单项 12px、附件卡 20px、提示气泡 12px）不再重复指定。
+
 ## 六、如何复跑
 
 1. 用隔离的 `DSH_HOME` 起一个 web 实例：`DSH_HOME=…\.dsh-home dsh web --port 0 --no-open`。
