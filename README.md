@@ -34,6 +34,8 @@
 | --- | --- |
 | ![Go 面板亮色](docs/opencode-panel-light.png) | ![Go 面板暗色](docs/opencode-panel-dark.png) |
 
+上面这些厚度（按钮、卡片、气泡、输入卡、刘海……）都能在设置面板里逐项调档位，也可以一键恢复默认值，详见下面的「个性化配置可以自己调」。
+
 独立预览页（模拟了聊天、气泡、代码块、表格和输入卡，方便不启动 DSH 也能看主题）：
 
 | 预览亮色 | 预览暗色 |
@@ -317,7 +319,7 @@ nitai-theme/
 │  ├─ check-opencode.mjs 检查 OpenCode Go 额度表与两端接线
 │  └─ clean-blank-sessions.mjs  清理 DSH 启动留下的空会话
 ├─ preview.html          不启动 DSH 的独立预览页
-├─ prototype.html        个性化配置草案页（勾选后可在浏览器里直接看效果）
+├─ prototype.html        个性化配置的设计草案页（历史评审用，最终清单以 lib/surfaces.js 为准）
 ├─ docs/                 截图
 └─ README.md
 ```
@@ -399,6 +401,21 @@ node tools/clean-blank-sessions.mjs --apply    # 删除会话目录并清理归�
 `--apply` 会先把 `~\.dsh\storages\workspace.json` 备份成 `workspace.json.bak-<时间戳>`，再从 `archivedSessionIds`、`pinnedSessionIds` 和各工作区的 `sessionIds` 里去掉这些 id。
 
 必须先把桌面端完全退出再执行 `--apply`：运行中的客户端会用自己的内存状态覆盖 `workspace.json`，在它运行期间改文件等于白改。
+
+## 更新记录
+
+### 0.5.0（2026-11-17）
+
+这一版主题外观基本没动，主要新增「个性化配置」：把界面里每一处有厚度的地方拆成 33 项，每项可以按「常态 / 悬停 / 选中」单独选档位。
+
+- 新增 `lib/surfaces.js`：33 项元素清单、八档阴影、配置校验与覆盖 CSS 生成。
+- 新增设置面板：点刘海箭头 → 「个性化配置」，勾选元素、选档位、保存即生效；面板顶部可一键「恢复默认配置」。
+- 新增自带默认配置：取值来自作者本机长期使用后满意的那一套，配置文件不存在时自动用它。
+- 宿主新增 `GET/POST/DELETE /dsh-nitai-theme/config.json` 与 `GET /dsh-nitai-theme/surfaces.json`。
+- 配置项带「专属阴影」能力：会话头部贴窗口顶边，凸起改成「底边一道线 + 下方投影」，否则看不出来。
+- 配置项带「圆角统一」能力：工具调用行、思考块这类原生没有圆角的元素，配置后统一成一个圆角。
+- 修掉的问题：设置页小标签被当成卡片涂阴影、表格首末列贴边与重复分隔线、代码块差异行左侧色条压住内边距、输入框「+」指令菜单被套上浮层样式、右栏「Git / 本轮文件」露出浏览器原生按钮外观、模型菜单搜索框多出描边与内凹。
+- 自检：33 项在三档下逐项核对了生成规则与实际计算值，报告见 [docs/config-audit.md](docs/config-audit.md)。
 
 ## 卸载 / 回滚
 

@@ -154,3 +154,14 @@ body:not(#nt-config-noop) [class*="iFrn8G_root"] { border-radius: 12px !importan
 结论：33 项在 `raised-md` / `inset-md` / `flat` 三档全部读到预期阴影，没有 `fail:`、没有 `bad-selector`。
 
 另外这一轮顺手修掉的两处：右栏「Git / 本轮文件」两个按钮在这一版 DSH 里根本没有任何样式（露的是浏览器原生按钮外观），主题改成纯文字标签并撤掉了单独的配置项；模型菜单顶部的搜索框被主题的通用输入框规则画上了底色、描边和焦点环，改成保持原生透明外观。
+
+## 八、默认配置与一键恢复（2026-11-17 补）
+
+- 默认值写在 `lib/surfaces.js` 的 `DEFAULT_STATES`，包成 `DEFAULT_CONFIG`；宿主 `readConfig()` 读不到配置文件时用它。
+- 验证方式：把隔离实例的 `config.json` 删掉，重新请求 `/dsh-nitai-theme/surfaces.json` 与 `/theme.css`。
+  - `surfaces.json` 返回 33 项，`nav-row` 为 `inset-sm / raised-sm / raised-md`、`composer` 为 `inset-sm / inset-md`，与预期一致。
+  - `theme.css` 末尾自动出现对应的覆盖规则，说明“没有配置文件”也会照默认值生效。
+- 一键恢复验证：先把 `nav-row` 常态改成 `raised-lg` 并 POST 保存（`theme.css` 随即出现对应规则），再点面板顶部「恢复默认配置」，宿主执行 `DELETE /dsh-nitai-theme/config.json`：
+  - 接口返回 `ok: true`，配置回到 33 项默认值；
+  - 面板下拉回到 `inset-sm / raised-sm / raised-md`，提示“已恢复主题默认配置，界面马上更新”；
+  - 隔离目录里的 `config.json` 已被删除。
