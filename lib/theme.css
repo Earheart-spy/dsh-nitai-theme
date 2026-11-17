@@ -733,6 +733,46 @@ table td {
 }
 
 /*
+ * 右栏「Git / 本轮文件」切换（dsh-better-sidebar 用的 DSH 通用标签组件）。
+ * 这一版的 DSH 没有给这两个按钮下发任何样式，浏览器就把它们画成原生灰色按钮（2px 外凸边框）。
+ * 用户希望它不要有任何装饰，所以这里只做一件事：去掉原生按钮外观，留下纯文字标签，
+ * 选中项靠颜色区分。不加底色、不加阴影、不加圆角，避免又变成一块“漂在画布上的小胶囊”。
+ */
+/*
+ * 同一个组件的外层容器也没有样式（不是 flex），两个标签会紧贴成「Git本轮文件」，
+ * 所以这里补上最小的排布规则：横排、垂直居中、留出间距。只补排布，不加任何装饰。
+ */
+[class*="wSkVaW_tabs"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+[class*="wSkVaW_tab"] {
+  appearance: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  font: inherit !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+  color: var(--dsw-alias-label-tertiary) !important;
+  cursor: pointer !important;
+}
+
+[class*="wSkVaW_tab"]:hover {
+  color: var(--dsw-alias-label-primary) !important;
+}
+
+[class*="wSkVaW_tab"][aria-selected="true"],
+[class*="wSkVaW_tabActive"] {
+  color: var(--dsw-alias-label-primary) !important;
+  font-weight: 600 !important;
+}
+
+/*
  * 浮层里的搜索框（模型菜单顶部的「搜索模型…」、指令面板的搜索等）保持 DSH 原生外观。
  * 这些输入框外面本来就有一层胶囊容器，主题如果给输入框自己再画底色、描边、内凹和焦点环，
  * 视觉上就会变成「胶囊里再套一个带蓝边的方块」，也就是用户说的多余描边。
