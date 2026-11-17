@@ -733,11 +733,34 @@ table td {
 }
 
 /*
+ * 浮层里的搜索框（模型菜单顶部的「搜索模型…」、指令面板的搜索等）保持 DSH 原生外观。
+ * 这些输入框外面本来就有一层胶囊容器，主题如果给输入框自己再画底色、描边、内凹和焦点环，
+ * 视觉上就会变成「胶囊里再套一个带蓝边的方块」，也就是用户说的多余描边。
+ * 所以这里把输入框本身清空，只保留光标。
+ */
+[role="menu"] input[role="searchbox"],
+[role="listbox"] input[role="searchbox"],
+[role="dialog"] input[role="searchbox"],
+[class*="_9r0rkG_"] input[role="searchbox"] {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+[role="menu"] input[role="searchbox"]:focus-visible,
+[role="listbox"] input[role="searchbox"]:focus-visible,
+[role="dialog"] input[role="searchbox"]:focus-visible,
+[class*="_9r0rkG_"] input[role="searchbox"]:focus-visible {
+  outline: none !important;
+}
+
+/*
  * 通用输入框的内凹只给独立存在的输入框。
  * 侧栏搜索框的凹槽画在它外面的 GAkraW_search 上（见后面的搜索框小节），
  * 这里把它排除掉，否则输入框自己再内凹一次，又变回两层阴影。
  */
-input[type="text"]:not([data-composer-card] *):not([class*="searchInput"]),
+input[type="text"]:not([data-composer-card] *):not([class*="searchInput"]):not([role="searchbox"]),
 input[type="search"]:not([data-composer-card] *),
 input[type="password"]:not([data-composer-card] *),
 input[type="email"]:not([data-composer-card] *),
