@@ -680,6 +680,20 @@
     peakWindow: { peak: true, label: '高峰', nextChangeAt: Date.now() + 35 * 60 * 1000 }
   };
 </script>
+<!--
+  预览页没有 DSH 的客户端模块加载器，这里补一个最小的实现：调用 factory 拿到
+  exports，再照 DSH 的做法调一次 apply()。这样 lib/client.js 在真机和预览页里
+  走的是同一条路径，预览页上的刘海就是真机上那个刘海。
+-->
+<script>
+  window.__ModuleLoader__ = {
+    load: function (module) {
+      var exports = module.factory(function () { return {}; });
+      if (exports && typeof exports.apply === 'function') exports.apply();
+      return exports;
+    }
+  };
+</script>
 <script src="lib/client.js"></script>
 <script>
   (function () {
