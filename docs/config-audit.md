@@ -81,6 +81,22 @@ await window.__ntAudit(['raised-lg', 'inset-lg'])   // 指定档位
 
 自检脚本也补了对应能力：`surfaces.json?debug=1` 会带出 `shadow` 字段，`__ntAudit` 对带专属阴影的项改成「样式表里有这一档 + 元素上确实有阴影」两步核对，不再拿公共档位的数值去比。
 
+### 差异行左侧的红绿色条（2026-11-17 补）
+
+聊天消息和文件预览弹窗里的 ```diff 代码块，每一行左边原本有一条 3px 的红/绿色条。它来自 markdown 代码块渲染器自己的样式：`_diffAdd_` / `_diffDel_` 上写着 `box-shadow: inset 3px 0 0`，而每行又有 `padding: 0 16px`，色条正好压在这段留白上，行与行之间还接不齐，看起来像贴在纸边的标签。
+
+处理办法是去掉色条、只保留很淡的行底色，增删含义交给行首的 `+` / `−` 符号颜色：
+
+```css
+[class*="_diffAdd_"],
+[class*="_diffDel_"] {
+  box-shadow: none !important;
+  border-radius: 4px !important;
+}
+```
+
+这和文件差异视图（`_0cITKW_` 那一套）的处理保持一致：那套也去掉了 `inset 3px 0 0` 色条，只留柔和的整行底色。
+
 ## 六、如何复跑
 
 1. 用隔离的 `DSH_HOME` 起一个 web 实例：`DSH_HOME=…\.dsh-home dsh web --port 0 --no-open`。

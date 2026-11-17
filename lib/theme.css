@@ -674,6 +674,21 @@ tbody td {
 
 
 /*
+ * 代码块里的差异行（聊天消息、文件预览弹窗里那种 ```diff 片段）：
+ * 这一套类名来自 markdown 代码块渲染器（_diffFence_ / _diffLine_ / _diffAdd_ / _diffDel_），
+ * DSH 给每一行贴一条 `box-shadow: inset 3px 0 0` 的 3px 色条，而每行左边有 16px 内边距，
+ * 色条正好压在这段留白上，看起来像贴在纸边的一条标签，行与行之间还接不齐。
+ *
+ * 这里把色条去掉，只保留很淡的行底色（配色变量在文件开头已经调柔），
+ * 增删含义交给行首的 + / − 符号颜色表达，和上面文件差异视图的处理保持一致。
+ */
+[class*="_diffAdd_"],
+[class*="_diffDel_"] {
+  box-shadow: none !important;
+  border-radius: 4px !important;
+}
+
+/*
  * 通用输入框的内凹只给独立存在的输入框。
  * 侧栏搜索框的凹槽画在它外面的 GAkraW_search 上（见后面的搜索框小节），
  * 这里把它排除掉，否则输入框自己再内凹一次，又变回两层阴影。
