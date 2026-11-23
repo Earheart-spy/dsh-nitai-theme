@@ -1980,6 +1980,62 @@ body.nt-has-costbar .dshcn-notch {
 }
 
 
+/* ── 输入框下方统计行里的项目信息（当前分支 / worktree） ──────────────
+ *
+ * 这一行由 DSH 用 justify-content:center 排布，主题往里插两个胶囊：
+ * 分支放在行首、worktree 放在行尾，中间原本的“轮次 / 速度 / 缓存命中”
+ * 自然被夹住，整组一起居中。
+ *
+ * 字号、行高、颜色都抄旁边统计胶囊的取值，看起来是同一条线上的一家人，
+ * 而不是另外贴上去的控件；只有分支名用了次强调色，让人一眼看到当前在哪条分支。
+ */
+.nt-git {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: calc(var(--dsh-content-font-size-secondary, 13px) - 1px);
+  line-height: calc(20px + var(--dsh-content-font-delta-secondary, 0px));
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.nt-git[hidden] {
+  display: none !important;
+}
+
+.nt-git svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  opacity: 0.85;
+}
+
+.nt-git-text {
+  min-width: 0;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 分支名是这一行里最需要看清的，给它次强调色；worktree 名字保持弱化。 */
+.nt-git-branch .nt-git-text {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.nt-git-worktree .nt-git-text {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* 窗口变窄时先让 worktree 让位，分支信息留着。 */
+@media (max-width: 900px) {
+  .nt-git-worktree {
+    display: none !important;
+  }
+}
+
 /*
  * 元素默认凹凸（主题自带外观）。
  *
